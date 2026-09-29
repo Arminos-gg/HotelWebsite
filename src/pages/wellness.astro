@@ -1,0 +1,313 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import Arrow from '../components/Arrow.astro';
+import { url } from '../lib/url';
+
+const elements = [
+  {
+    name: 'Hallenbad',
+    mood: 'Leicht & frei',
+    heat: 1,
+    text: 'Ein paar ruhige Längen am Morgen oder langsames Treiben nach dem Seminar – Bewegung, die einfach guttut.',
+    photo: 'hallenbad',
+    illu: 'pool',
+  },
+  {
+    name: 'Sauna',
+    mood: 'Klassische Hitze',
+    heat: 5,
+    text: 'Trockene Wärme, die den Kopf leert und den Körper tief entspannt. Danach: kalt abkühlen und nachspüren.',
+    photo: 'sauna',
+    illu: 'sauna',
+  },
+  {
+    name: 'Dampfbad',
+    mood: 'Sanft & feucht',
+    heat: 3,
+    text: 'Milde, feuchte Wärme hüllt Sie ein – wohltuend für Haut und Atemwege, ideal für alle, denen die Sauna zu heiß ist.',
+    photo: 'dampfbad',
+    illu: 'dampf',
+  },
+  {
+    name: 'Infrarotkabine',
+    mood: 'Tiefenwärme',
+    heat: 3,
+    text: 'Wärme, die direkt in die Muskulatur geht. Perfekt für verspannte Schultern nach einem langen Tag am Laptop.',
+    photo: 'infrarot',
+    illu: 'infrarot',
+  },
+  {
+    name: 'Kneippbereich',
+    mood: 'Belebend',
+    heat: 0,
+    text: 'Wechselreize nach Sebastian Kneipp – ein Klassiker, der Kreislauf und Beine in Schwung bringt.',
+    photo: 'kneipp',
+    illu: 'kneipp',
+  },
+];
+
+const ritual = [
+  { t: 'Waldluft', d: 'Eine Runde durchs Redltal. Tief einatmen.' },
+  { t: 'Aufwärmen', d: 'Infrarot oder Dampfbad bereiten den Körper vor.' },
+  { t: 'Sauna', d: 'Ein bis drei Gänge, ganz nach Gefühl.' },
+  { t: 'Kneippen', d: 'Kaltes Wasser, warme Füße – der Kreislauf dankt.' },
+  { t: 'Treiben lassen', d: 'Zum Abschluss ein paar Züge im Hallenbad.' },
+];
+---
+
+<Base title="Wellness" description="Wellness im Redltalhof: Hallenbad, Sauna, Dampfbad, Infrarotkabine und Kneippbereich – für Hausgäste kostenlos. Entspannung mitten im Hausruck.">
+  <PageHero
+    crumb="Wellness"
+    eyebrow="Wellness"
+    title="Wärme, Wasser, <em>Ruhe.</em>"
+    lead="Für Hausgäste kostenlos: unser Wellnessbereich mit Hallenbad, Sauna, Dampfbad, Infrarotkabine und Kneippbereich."
+    seed={71}
+  />
+
+  <section class="section dark water" aria-labelledby="elemente">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Fünf Elemente</p>
+          <h2 id="elemente" data-split>Ihr kleines Refugium <em>im Wald.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Nach dem Seminartag, der Wanderung oder einfach so: Der Wellnessbereich ist für alle Hausgäste da und im Zimmerpreis
+          inbegriffen.
+        </p>
+      </div>
+
+      <div class="els">
+        {
+          elements.map((e, i) => (
+            <article class:list={['el', i === 0 && 'el--big']} data-reveal style={`--d:${(i % 3) * 120}`}>
+              <div class="el__media frame">
+                <Photo name={e.photo} illustration={e.illu} alt={e.name} sizes={i === 0 ? '(min-width: 900px) 66vw, 100vw' : '(min-width: 900px) 33vw, 100vw'} />
+              </div>
+              <div class="el__body">
+                <div class="el__top">
+                  <span class="el__mood">{e.mood}</span>
+                  <span class="heat" aria-label={`Wärme ${e.heat} von 5`}>
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <i class:list={[n <= e.heat && 'on']} />
+                    ))}
+                  </span>
+                </div>
+                <h3>{e.name}</h3>
+                <p>{e.text}</p>
+              </div>
+            </article>
+          ))
+        }
+        <a class="el el--info" href={url('/zimmer/')} data-reveal style="--d:240">
+          <span class="el__mood">Für Hausgäste</span>
+          <span class="el__zero num">0 €</span>
+          <span class="el__infotext">Aufpreis für den gesamten Wellnessbereich – er ist im Zimmerpreis bereits enthalten.</span>
+          <span class="link">Zimmer ansehen <Arrow /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section linen" aria-labelledby="ritual">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Unser Vorschlag</p>
+          <h2 id="ritual" data-split>Das <em>Redltal-Ritual.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Kein Muss, nur eine Idee für einen vollkommenen Abend – in fünf Schritten vom Wald zurück zu sich selbst.
+        </p>
+      </div>
+      <ol class="ritual">
+        {
+          ritual.map((r, i) => (
+            <li data-reveal style={`--d:${i * 110}`}>
+              <span class="ritual__n num">{i + 1}</span>
+              <h3>{r.t}</h3>
+              <p>{r.d}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="cta">
+    <div class="container">
+      <div class="cta-box" data-reveal="scale">
+        <div>
+          <p class="eyebrow">Wellness inklusive</p>
+          <h2 id="cta">Bleiben Sie <em>über Nacht.</em></h2>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href={url('/zimmer/')}>Zimmer ansehen <span class="arrow"><Arrow /></span></a>
+          <a class="btn btn--ghost" href={url('/kontakt/#anfrage')}>Anfragen</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .water {
+    background:
+      radial-gradient(80% 60% at 80% 0%, rgb(45 111 117 / 0.35), transparent 60%),
+      linear-gradient(180deg, #0c1c1c, var(--forest-900));
+  }
+  .els {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 700px) {
+    .els {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1000px) {
+    .els {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .el--big {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+  .el {
+    position: relative;
+    display: grid;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: rgb(255 255 255 / 0.03);
+    border: 1px solid var(--line-inv);
+    transition:
+      transform 0.8s var(--ease),
+      border-color 0.5s;
+  }
+  .el:hover {
+    transform: translateY(-6px);
+    border-color: rgb(235 192 127 / 0.4);
+  }
+  .el--info {
+    align-content: space-between;
+    gap: 1.2rem;
+    padding: 1.8rem;
+    text-decoration: none;
+    background:
+      radial-gradient(90% 70% at 100% 0%, rgb(235 192 127 / 0.25), transparent 60%),
+      rgb(255 255 255 / 0.03);
+  }
+  .el__zero {
+    font-size: clamp(4rem, 8vw, 6.5rem);
+    line-height: 1;
+    font-weight: 300;
+    color: var(--amber-2);
+  }
+  .el__infotext {
+    color: var(--text-inv-soft);
+    font-size: 0.98rem;
+    max-width: 30ch;
+  }
+  .el--info .link {
+    justify-self: start;
+  }
+  .el__media {
+    aspect-ratio: 16 / 11;
+    border-radius: 0;
+  }
+  .el--big .el__media {
+    aspect-ratio: auto;
+    min-height: 320px;
+  }
+  .el--big {
+    grid-template-rows: 1fr auto;
+  }
+  .el__body {
+    padding: 1.5rem 1.6rem 1.8rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+  .el__body p {
+    margin: 0;
+    color: var(--text-inv-soft);
+    font-size: 0.98rem;
+  }
+  .el__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  .el__mood {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber-2);
+  }
+  .heat {
+    display: flex;
+    gap: 4px;
+  }
+  .heat i {
+    width: 16px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgb(255 255 255 / 0.12);
+  }
+  .heat i.on {
+    background: linear-gradient(90deg, var(--amber-2), var(--ember));
+  }
+
+  .ritual {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1rem;
+    counter-reset: r;
+  }
+  .ritual li {
+    position: relative;
+    padding: 1.6rem;
+    border-radius: var(--radius);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+  }
+  .ritual__n {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--forest-800);
+    color: var(--amber-2);
+    font-size: 1.4rem;
+    margin-bottom: 0.6rem;
+  }
+  .ritual p {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+  }
+
+  .cta-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    padding: clamp(2rem, 5vw, 4rem);
+    border-radius: var(--radius-lg);
+    background: var(--forest-800);
+    color: var(--text-inv);
+  }
+</style>

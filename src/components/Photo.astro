@@ -1,0 +1,43 @@
+---
+// Bild-Platzhalter mit Automatik:
+// Liegt unter src/assets/photos/<name>.(jpg|jpeg|png|webp|avif) ein Foto,
+// wird es optimiert (responsive, modernes Format) ausgeliefert.
+// Sonst erscheint die passende Illustration – die Seite sieht nie „kaputt“ aus.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Illustration from './Illustration.astro';
+
+interface Props {
+  name: string;
+  alt: string;
+  illustration?: string;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const { name, alt, illustration, sizes = '(min-width: 900px) 50vw, 100vw', loading = 'lazy', class: cls = '' } = Astro.props;
+
+const photos = import.meta.glob<{ default: ImageMetadata }>('/src/assets/photos/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG}', {
+  eager: true,
+});
+const match = Object.entries(photos).find(([p]) => p.split('/').pop()!.replace(/\.[^.]+$/, '') === name);
+const img = match?.[1].default;
+const widths = img ? [480, 800, 1200, 1800, 2400].filter((w) => w < img.width).concat(Math.min(img.width, 2800)) : [];
+---
+
+{
+  img ? (
+    <Image
+      src={img}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      loading={loading}
+      class={cls}
+      data-photo={name}
+    />
+  ) : (
+    <Illustration name={illustration ?? name} label={alt} class={cls} />
+  )
+}

@@ -1,0 +1,191 @@
+---
+// Anfrageformular ohne Server: baut eine fertige E-Mail im Mailprogramm der Gäste.
+// Später kann hier problemlos ein Formular-Dienst (z. B. Formspree) angebunden werden.
+import Arrow from './Arrow.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+interface Props {
+  preset?: 'Zimmer' | 'Seminar' | 'Feier / Veranstaltung' | 'Tischreservierung' | 'Sonstiges';
+  id?: string;
+}
+const { preset = 'Zimmer', id = 'anfrage' } = Astro.props;
+const options = ['Zimmer', 'Seminar', 'Feier / Veranstaltung', 'Tischreservierung', 'Sonstiges'];
+---
+
+<form class="inq" id={id} data-inquiry data-to={site.email} novalidate={false}>
+  <fieldset class="inq__chips">
+    <legend>Worum geht es?</legend>
+    {
+      options.map((o) => (
+        <label class="chip">
+          <input type="radio" name="anliegen" value={o} checked={o === preset} />
+          <span>{o}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+
+  <div class="inq__grid">
+    <label class="field">
+      <span>Name *</span>
+      <input name="name" type="text" autocomplete="name" required />
+    </label>
+    <label class="field">
+      <span>E-Mail *</span>
+      <input name="email" type="email" autocomplete="email" required />
+    </label>
+    <label class="field">
+      <span>Telefon</span>
+      <input name="telefon" type="tel" autocomplete="tel" />
+    </label>
+    <label class="field">
+      <span>Personen</span>
+      <input name="personen" type="number" min="1" max="200" inputmode="numeric" />
+    </label>
+    <label class="field">
+      <span>Anreise / Termin</span>
+      <input name="anreise" type="date" />
+    </label>
+    <label class="field">
+      <span>Abreise</span>
+      <input name="abreise" type="date" />
+    </label>
+    <label class="field field--full">
+      <span>Ihre Nachricht</span>
+      <textarea name="nachricht" rows="5" placeholder="Wünsche, Fragen, Ideen …"></textarea>
+    </label>
+  </div>
+
+  <div class="inq__foot">
+    <button class="btn" type="submit">Anfrage senden <span class="arrow"><Arrow /></span></button>
+    <p class="fineprint">
+      Mit dem Absenden öffnet sich Ihr E-Mail-Programm mit der fertigen Anfrage an {site.email}. Es werden keine Daten auf
+      dieser Website gespeichert. Mehr dazu im <a href={url('/datenschutz/')}>Datenschutz</a>.
+    </p>
+  </div>
+  <p class="inq__status" data-form-status role="status" hidden></p>
+</form>
+
+<style>
+  .inq {
+    display: grid;
+    gap: 2rem;
+  }
+  .inq__chips {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .inq__chips legend {
+    font-size: 0.74rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 1rem;
+    padding: 0;
+  }
+  .chip {
+    position: relative;
+    cursor: pointer;
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chip span {
+    display: inline-block;
+    padding: 0.7rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 0.92rem;
+    font-weight: 600;
+    transition:
+      background 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+  .chip:hover span {
+    border-color: var(--amber);
+  }
+  .chip input:checked + span {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ink);
+  }
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+  .inq__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .inq__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .field--full {
+      grid-column: 1 / -1;
+    }
+  }
+  .field {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .field span {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 0.95rem 1.1rem;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--paper) 70%, transparent);
+    font-size: 1rem;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      background 0.3s;
+  }
+  :global(.dark) .field input,
+  :global(.dark) .field textarea {
+    background: rgb(255 255 255 / 0.04);
+    color-scheme: dark;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--amber);
+    box-shadow: 0 0 0 4px rgb(211 154 78 / 0.18);
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+  .inq__foot {
+    display: grid;
+    gap: 1.2rem;
+    justify-items: start;
+  }
+  .inq__foot .fineprint {
+    max-width: 60ch;
+  }
+  .inq__status {
+    padding: 1rem 1.2rem;
+    border-radius: 14px;
+    background: rgb(111 125 78 / 0.18);
+    border: 1px solid rgb(111 125 78 / 0.4);
+    font-weight: 600;
+    margin: 0;
+  }
+</style>

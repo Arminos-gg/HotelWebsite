@@ -1,0 +1,361 @@
+---
+// Stilisierte Regionskarte: Redltal im Zentrum, Seen, Wälder, Alpen und Ziele mit Richtwerten.
+import { rng } from '../lib/landscape';
+
+const LON0 = 12.95;
+const LON1 = 14.35;
+const LAT0 = 47.72;
+const LAT1 = 48.35;
+const VW = 1000;
+const VH = 670;
+const px = (lon: number, lat: number): [number, number] => [
+  Math.round(((lon - LON0) / (LON1 - LON0)) * VW),
+  Math.round(((LAT1 - lat) / (LAT1 - LAT0)) * VH),
+];
+const unitsPerKm = VW / ((LON1 - LON0) * 74.4);
+
+const home = px(13.4655, 48.0905);
+
+function blob(cx: number, cy: number, rx: number, ry: number, seed: number, n = 48) {
+  const r = rng(seed);
+  const ph = [r() * 6.28, r() * 6.28, r() * 6.28];
+  let d = '';
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const m = 1 + 0.12 * Math.sin(a * 3 + ph[0]) + 0.08 * Math.sin(a * 5 + ph[1]) + 0.05 * Math.sin(a * 9 + ph[2]);
+    const x = cx + Math.cos(a) * rx * m;
+    const y = cy + Math.sin(a) * ry * m;
+    d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+  return `${d}Z`;
+}
+
+const kob = px(13.33, 48.12);
+const hau = px(13.63, 48.135);
+const contours = [
+  ...[1, 0.8, 0.6, 0.42, 0.26].map((s, i) => blob(kob[0], kob[1], 120 * s, 88 * s, 10 + i)),
+  ...[1, 0.78, 0.56, 0.34].map((s, i) => blob(hau[0], hau[1], 92 * s, 62 * s, 20 + i)),
+];
+
+function lake(a: [number, number], b: [number, number], w: number) {
+  const [x1, y1] = a;
+  const [x2, y2] = b;
+  const cx = (x1 + x2) / 2;
+  const cy = (y1 + y2) / 2;
+  const len = Math.hypot(x2 - x1, y2 - y1) / 2;
+  const ang = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+  return { cx, cy, rx: len, ry: w, ang };
+}
+const lakes = [
+  { name: 'Attersee', ...lake(px(13.585, 47.957), px(13.49, 47.805), 13) },
+  { name: 'Mondsee', ...lake(px(13.33, 47.862), px(13.44, 47.79), 9) },
+  { name: 'Traunsee', ...lake(px(13.8, 47.915), px(13.77, 47.81), 9) },
+  { name: 'Wolfgangsee', ...lake(px(13.35, 47.76), px(13.48, 47.74), 7) },
+];
+
+const ar = rng(5);
+let alpsD = `M-10 ${VH + 10}`;
+for (let x = -10; x < VW + 40; ) {
+  const w = 30 + ar() * 50;
+  const base = 612 + Math.sin(x * 0.01) * 12;
+  alpsD += `L${(x + w / 2).toFixed(0)} ${(base - 30 - ar() * 55).toFixed(0)}L${(x + w).toFixed(0)} ${base.toFixed(0)}`;
+  x += w;
+}
+alpsD += `L${VW + 40} ${VH + 10}Z`;
+
+type Dest = { id: string; name: string; lon: number; lat: number; km: string; min: string; note: string; dx?: number; dy?: number; anchor?: 'start' | 'end' | 'middle' };
+const dests: Dest[] = [
+  { id: 'frankenburg', name: 'Frankenburg', lon: 13.4944, lat: 48.0717, km: 'ca. 4 km', min: 'ca. 5 Min.', note: 'Frankenburger Würfelspiel', dx: 12, dy: 18 },
+  { id: 'ampflwang', name: 'Ampflwang', lon: 13.565, lat: 48.088, km: 'ca. 9 km', min: 'ca. 12 Min.', note: 'Lokpark & Bergbaugeschichte', dx: 10, dy: -8 },
+  { id: 'voecklabruck', name: 'Vöcklabruck', lon: 13.6556, lat: 48.0086, km: 'ca. 20 km', min: 'ca. 25 Min.', note: 'Bezirksstadt', dx: 12, dy: 5 },
+  { id: 'attersee', name: 'Attersee', lon: 13.56, lat: 47.93, km: 'ca. 22 km', min: 'ca. 25 Min.', note: 'Baden, Segeln, Salzkammergut', dx: 18, dy: 4 },
+  { id: 'ried', name: 'Ried i. Innkreis', lon: 13.4886, lat: 48.2106, km: 'ca. 25 km', min: 'ca. 30 Min.', note: 'Messestadt', dx: 12, dy: 5 },
+  { id: 'mondsee', name: 'Mondsee', lon: 13.35, lat: 47.856, km: 'ca. 40 km', min: 'ca. 40 Min.', note: 'See & Basilika', dx: -12, dy: -6, anchor: 'end' },
+  { id: 'salzburg', name: 'Salzburg', lon: 13.055, lat: 47.8095, km: 'ca. 60 km', min: 'ca. 50 Min.', note: 'Festspielstadt & Flughafen', dx: 12, dy: -10 },
+  { id: 'linz', name: 'Linz', lon: 14.2858, lat: 48.3064, km: 'ca. 90 km', min: 'ca. 1 Std.', note: 'Landeshauptstadt', dx: -12, dy: 22, anchor: 'end' },
+];
+const destPts = dests.map((d) => ({ ...d, p: px(d.lon, d.lat) }));
+
+const a1 = [px(13.05, 47.83), px(13.3, 47.87), px(13.45, 47.935), px(13.6, 47.99), px(13.76, 48.02), px(14.02, 48.15), px(14.2, 48.24), px(14.33, 48.27)];
+const a1D = `M${a1.map(([x, y]) => `${x} ${y}`).join('L')}`;
+
+const rings = [10, 25, 50].map((km) => ({ km, r: km * unitsPerKm }));
+---
+
+<div class="rmap" data-map>
+  <svg viewBox={`0 0 ${VW} ${VH}`} class="rmap__svg" role="img" aria-labelledby="rmap-title">
+    <title id="rmap-title">Stilisierte Karte: Lage des Redltalhofs zwischen Kobernaußerwald, Hausruck, Salzkammergut-Seen, Salzburg und Linz</title>
+    <defs>
+      <pattern id="rmap-trees" width="14" height="14" patternUnits="userSpaceOnUse">
+        <path d="M7 2l4 8H3Z" fill="#6f7d4e" opacity=".55"></path>
+      </pattern>
+      <radialGradient id="rmap-home">
+        <stop offset="0" stop-color="#ebc07f" stop-opacity=".55"></stop>
+        <stop offset="1" stop-color="#ebc07f" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+
+    <rect width={VW} height={VH} fill="#0e1712"></rect>
+
+    <g class="rmap__contours" fill="none" stroke="#a9b49b" stroke-opacity=".16" stroke-width="1.2">
+      {contours.map((d) => <path d={d}></path>)}
+    </g>
+
+    <path d={contours[0]} fill="url(#rmap-trees)" opacity=".7"></path>
+    <path d={contours[5]} fill="url(#rmap-trees)" opacity=".7"></path>
+
+    <path d={alpsD} fill="#1b2a22" stroke="#a9b49b" stroke-opacity=".25" stroke-width="1.2"></path>
+
+    <g class="rmap__lakes">
+      {
+        lakes.map((l) => (
+          <ellipse cx={l.cx} cy={l.cy} rx={l.rx} ry={l.ry} transform={`rotate(${l.ang} ${l.cx} ${l.cy})`} fill="#2d6f75"></ellipse>
+        ))
+      }
+    </g>
+
+    <path d={a1D} fill="none" stroke="#efe9dc" stroke-opacity=".22" stroke-width="3" stroke-dasharray="1 7" stroke-linecap="round"></path>
+    <text x={a1[4][0] + 6} y={a1[4][1] + 22} class="rmap__road">A1</text>
+
+    <g class="rmap__rings" fill="none" stroke="#ebc07f" stroke-opacity=".28" stroke-dasharray="3 6">
+      {
+        rings.map((ring) => (
+          <>
+            <circle cx={home[0]} cy={home[1]} r={ring.r}></circle>
+            <text x={home[0] + ring.r * 0.707 + 6} y={home[1] - ring.r * 0.707 - 4} class="rmap__ring-label">
+              {ring.km} km
+            </text>
+          </>
+        ))
+      }
+    </g>
+
+    <g class="rmap__routes">
+      {destPts.map((d) => <line class={`rmap__route rmap__route--${d.id}`} x1={home[0]} y1={home[1]} x2={d.p[0]} y2={d.p[1]}></line>)}
+    </g>
+
+    <text x={kob[0]} y={kob[1] + 4} class="rmap__area">Kobernaußerwald</text>
+    <text x={hau[0] + 10} y={hau[1] - 30} class="rmap__area">Hausruck</text>
+    <text x="500" y="652" class="rmap__area">Alpen · Salzkammergut</text>
+    {
+      lakes.filter((l) => l.name !== 'Mondsee' && l.name !== 'Wolfgangsee').map((l) => (
+        <text x={l.cx + 22} y={l.cy + 30} class="rmap__lake-label">
+          {l.name}
+        </text>
+      ))
+    }
+
+    <g class="rmap__dests">
+      {
+        destPts.map((d) => (
+          <g class="rmap__dest" data-dest={d.id} tabindex="0">
+            <circle cx={d.p[0]} cy={d.p[1]} r="5"></circle>
+            <text x={d.p[0] + (d.dx ?? 10)} y={d.p[1] + (d.dy ?? 4)} text-anchor={d.anchor ?? 'start'}>
+              {d.name}
+            </text>
+          </g>
+        ))
+      }
+    </g>
+
+    <g class="rmap__home">
+      <circle cx={home[0]} cy={home[1]} r="60" fill="url(#rmap-home)"></circle>
+      <circle class="rmap__pulse" cx={home[0]} cy={home[1]} r="10"></circle>
+      <circle cx={home[0]} cy={home[1]} r="8" fill="#ebc07f"></circle>
+      <circle cx={home[0]} cy={home[1]} r="3" fill="#0e1712"></circle>
+      <text x={home[0] - 16} y={home[1] - 18} text-anchor="end" class="rmap__home-label">Redltalhof</text>
+    </g>
+
+    <g class="rmap__compass" transform="translate(56 64)">
+      <circle r="24" fill="none" stroke="#efe9dc" stroke-opacity=".25"></circle>
+      <path d="M0 -18L6 0H-6Z" fill="#ebc07f"></path>
+      <path d="M0 18L6 0H-6Z" fill="#efe9dc" opacity=".3"></path>
+      <text y="-30" text-anchor="middle" class="rmap__ring-label">N</text>
+    </g>
+  </svg>
+
+  <ul class="rmap__list">
+    {
+      dests.map((d) => (
+        <li>
+          <button type="button" data-dest={d.id}>
+            <span class="rmap__name">{d.name}</span>
+            <span class="rmap__km num">{d.km}</span>
+            <span class="rmap__note">{d.note}</span>
+            <span class="rmap__min">{d.min}</span>
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .rmap {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  @media (min-width: 1000px) {
+    .rmap {
+      grid-template-columns: 1.6fr 1fr;
+      gap: 3rem;
+    }
+  }
+  .rmap__svg {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line-inv);
+    background: #0e1712;
+  }
+  .rmap__area {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 17px;
+    fill: #a9b49b;
+    text-anchor: middle;
+    opacity: 0.8;
+  }
+  .rmap__lake-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    fill: #7fc1c4;
+    opacity: 0.9;
+  }
+  .rmap__road {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    fill: #efe9dc;
+    opacity: 0.4;
+  }
+  .rmap__ring-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    fill: #ebc07f;
+    stroke: none;
+    opacity: 0.7;
+  }
+  .rmap__route {
+    stroke: #ebc07f;
+    stroke-width: 2;
+    stroke-dasharray: 4 6;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+  .rmap__dest {
+    cursor: pointer;
+    outline: none;
+  }
+  .rmap__dest circle {
+    fill: #efe9dc;
+    transition:
+      fill 0.3s,
+      r 0.3s;
+  }
+  .rmap__dest text {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    fill: #efe9dc;
+    paint-order: stroke;
+    stroke: #0e1712;
+    stroke-width: 5px;
+  }
+  .rmap__home-label {
+    font-family: var(--serif);
+    font-size: 26px;
+    fill: #ebc07f;
+    paint-order: stroke;
+    stroke: #0e1712;
+    stroke-width: 6px;
+  }
+  .rmap__pulse {
+    fill: none;
+    stroke: #ebc07f;
+    stroke-width: 2;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 2.4s var(--ease) infinite;
+  }
+  @keyframes pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(5);
+      opacity: 0;
+    }
+  }
+  .rmap__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line-inv);
+  }
+  .rmap__list button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.1rem 1rem;
+    text-align: left;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--line-inv);
+    padding: 0.95rem 0.25rem;
+    cursor: pointer;
+    transition:
+      background 0.3s,
+      padding 0.4s var(--ease);
+  }
+  .rmap__name {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+  .rmap__km {
+    font-size: 1.35rem;
+    text-align: right;
+    color: var(--amber-2);
+  }
+  .rmap__note,
+  .rmap__min {
+    font-size: 0.82rem;
+    color: var(--text-inv-soft);
+  }
+  .rmap__min {
+    text-align: right;
+  }
+
+  /* Aktives Ziel */
+  .rmap:global([data-active]) .rmap__dest circle {
+    fill: #6d7466;
+  }
+  .rmap__list button:hover,
+  .rmap__list button.is-active {
+    background: rgb(235 192 127 / 0.06);
+    padding-inline: 0.9rem;
+  }
+</style>
+
+<style is:global>
+  [data-map][data-active='frankenburg'] .rmap__route--frankenburg,
+  [data-map][data-active='ampflwang'] .rmap__route--ampflwang,
+  [data-map][data-active='voecklabruck'] .rmap__route--voecklabruck,
+  [data-map][data-active='attersee'] .rmap__route--attersee,
+  [data-map][data-active='ried'] .rmap__route--ried,
+  [data-map][data-active='mondsee'] .rmap__route--mondsee,
+  [data-map][data-active='salzburg'] .rmap__route--salzburg,
+  [data-map][data-active='linz'] .rmap__route--linz {
+    opacity: 1;
+  }
+  [data-map] .rmap__dest.is-active circle {
+    fill: #ebc07f !important;
+    r: 8px;
+  }
+</style>

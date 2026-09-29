@@ -1,0 +1,209 @@
+---
+import Logo from './Logo.astro';
+import { site, nav, openingHours } from '../data/site';
+import { url } from '../lib/url';
+import { makeRidge, forest, ridgePath } from '../lib/landscape';
+
+// Waldkante als Übergang in den Footer
+const ridge = makeRidge(404, 860, [
+  [14, 0.004],
+  [6, 0.013],
+]);
+const treeline = ridgePath(ridge, 20) + forest(ridge, 405, { spacing: [9, 20], height: [30, 110], sink: 8 });
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <svg class="footer__trees" viewBox="0 700 1600 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path d={treeline}></path>
+  </svg>
+
+  <div class="footer__body">
+    <div class="container">
+      <div class="footer__cta">
+        <p class="eyebrow">Ihr Platz im Redltal</p>
+        <h2>Kommen Sie <em>zur Ruhe.</em><br />Wir kümmern uns um den Rest.</h2>
+        <div class="btn-row">
+          <a class="btn" href={url('/kontakt/#anfrage')}>
+            Jetzt anfragen
+            <span class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+          </a>
+          <a class="btn btn--ghost" href={site.phoneHref}>{site.phone}</a>
+        </div>
+      </div>
+
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <Logo size={56} />
+          <p>
+            <strong>{site.fullName}</strong><br />
+            {site.address.street}<br />
+            A-{site.address.zip} {site.address.city}<br />
+            {site.address.region}, {site.address.country}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="footer__h">Kontakt</h3>
+          <p>
+            <a href={site.phoneHref}>{site.phone}</a><br />
+            <a href={`mailto:${site.email}`}>{site.email}</a><br />
+            <a href={site.routeUrl} target="_blank" rel="noopener">Route planen ↗</a>
+          </p>
+        </div>
+
+        <div>
+          <h3 class="footer__h">Gasthof geöffnet</h3>
+          <dl class="footer__hours">
+            {
+              openingHours.gasthof.map((row) => (
+                <>
+                  <dt>{row.days}</dt>
+                  <dd>{row.time}</dd>
+                </>
+              ))
+            }
+          </dl>
+          <p class="footer__note">Küche {openingHours.kitchen[0].days}, {openingHours.kitchen[0].time}</p>
+        </div>
+
+        <div>
+          <h3 class="footer__h">Entdecken</h3>
+          <ul class="footer__nav">
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={url(item.href)}>{item.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__word" aria-hidden="true">Redltalhof</div>
+
+      <div class="footer__legal">
+        <span>© {year} {site.fullName}</span>
+        <span class="footer__links">
+          <a href={url('/impressum/')}>Impressum</a>
+          <a href={url('/datenschutz/')}>Datenschutz</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    color: var(--text-inv);
+    margin-top: -1px;
+  }
+  .footer__trees {
+    display: block;
+    width: 100%;
+    height: clamp(90px, 12vw, 190px);
+    margin-bottom: -2px;
+  }
+  .footer__trees path {
+    fill: var(--forest-950);
+  }
+  .footer__body {
+    background: var(--forest-950);
+    padding-block: clamp(3rem, 7vw, 6rem) 2rem;
+    overflow: hidden;
+  }
+  .footer__cta {
+    display: grid;
+    gap: 2rem;
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+    border-bottom: 1px solid var(--line-inv);
+  }
+  .footer__cta h2 {
+    max-width: 16ch;
+  }
+  .footer__grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    padding-block: clamp(3rem, 6vw, 5rem);
+    font-size: 0.95rem;
+    color: var(--text-inv-soft);
+  }
+  .footer__brand svg {
+    color: var(--amber-2);
+    margin-bottom: 1.2rem;
+  }
+  .footer__brand strong {
+    color: var(--linen);
+    font-weight: 700;
+  }
+  .footer__h {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 1.1rem;
+  }
+  .footer a {
+    text-decoration: none;
+    color: var(--linen);
+    transition: color 0.3s;
+  }
+  .footer a:hover {
+    color: var(--amber-2);
+  }
+  .footer__hours {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    gap: 0.35rem 1.25rem;
+    margin: 0 0 0.8rem;
+  }
+  .footer__hours dd {
+    margin: 0;
+    color: var(--linen);
+    font-variant-numeric: tabular-nums;
+  }
+  .footer__note {
+    font-size: 0.85rem;
+  }
+  .footer__nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .footer__word {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(4rem, 17.5vw, 17rem);
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--linen) 22%, transparent);
+    font-variation-settings: 'SOFT' 100;
+    user-select: none;
+    margin-block: 1rem 2.5rem;
+    white-space: nowrap;
+  }
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.82rem;
+    color: var(--text-inv-soft);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-inv);
+  }
+  .footer__links {
+    display: flex;
+    gap: 1.5rem;
+  }
+</style>

@@ -1,0 +1,512 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Arrow from '../components/Arrow.astro';
+import { prices, facts, euro } from '../data/site';
+import { url } from '../lib/url';
+
+const rooms = [
+  {
+    name: 'Seminarraum Erdgeschoss',
+    capacity: facts.seminarLarge,
+    capLabel: `bis ca. ${facts.seminarLarge} Personen`,
+    text: 'Der große Raum für Tagungen, Schulungen und Workshops – mit eigenem Buffetbereich samt Stehtischen für die Pausen, angrenzender Raucherzone und Pausenterrasse ins Grüne.',
+    features: ['Technisch zeitgemäß ausgestattet', 'Eigener Buffetbereich mit Stehtischen', 'Pausenterrasse & Raucherzone'],
+    photo: 'seminar-gross',
+    illu: 'seminar',
+  },
+  {
+    name: 'Seminarraum Obergeschoss',
+    capacity: 20,
+    capLabel: `ca. ${facts.seminarSmall} Personen`,
+    text: 'Der kleinere Raum besticht durch sein interessantes Lichtdesign – ideal für Klausuren, Strategietage und kreative Workshops in kleiner Runde.',
+    features: ['Besonderes Lichtdesign', 'Ideal für Klausuren & Workshops', 'Ruhige Lage im Obergeschoss'],
+    photo: 'seminar-klein',
+    illu: 'seminar-licht',
+  },
+];
+
+const reasons = [
+  { t: 'Ruhe', d: 'Kein Stadtlärm, keine Ablenkung. Nur Wald, Wiesen und der Kopf frei für das Wesentliche.', i: 'M4 20c4-6 12-6 16 0M12 4v8M8 8l4 4 4-4' },
+  { t: 'Natur', d: 'Die Mittagspause wird zum Waldspaziergang. Frische Luft bringt frische Gedanken.', i: 'M12 3l-6 9h4l-5 7h14l-5-7h4z' },
+  { t: 'Kulinarik', d: 'Regionale Küche aus dem hauseigenen Gasthof – vom Frühstück bis zur Vollpension.', i: 'M5 3v8a3 3 0 0 0 6 0V3M8 3v18M17 3c-2 2-3 5-3 8h3v10' },
+  { t: 'Wellness', d: 'Nach dem Seminartag in Sauna, Dampfbad oder Hallenbad abschalten – für Hausgäste inklusive.', i: 'M3 17c3 0 3-2 6-2s3 2 6 2 3-2 6-2M3 21c3 0 3-2 6-2s3 2 6 2 3-2 6-2M8 11c0-3 2-3 2-6M13 11c0-3 2-3 2-6' },
+  { t: 'Übernachtung', d: `${facts.beds} Betten im Haus: Die ganze Gruppe unter einem Dach, ohne Shuttle, ohne Hotelsuche.`, i: 'M3 18V8M3 14h18v4M21 18v-6a3 3 0 0 0-3-3h-7v5M7 11.5a1.5 1.5 0 1 0 0-.01' },
+  { t: 'Alles aus einer Hand', d: 'Raum, Technik, Verpflegung und Zimmer – ein Ansprechpartner, ein Angebot.', i: 'M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z' },
+];
+
+const steps = [
+  { n: '01', t: 'Anfragen', d: 'Termin, Gruppengröße und Wünsche – per Formular, Telefon oder E-Mail.' },
+  { n: '02', t: 'Angebot erhalten', d: 'Wir stellen Raum, Verpflegung und Zimmer individuell für Sie zusammen.' },
+  { n: '03', t: 'Ankommen & loslegen', d: 'Raum vorbereitet, Kaffee fertig, Wald vor der Tür. Sie konzentrieren sich aufs Arbeiten.' },
+];
+---
+
+<Base title="Seminarhotel" description="Seminarhotel mitten in der Natur: zwei moderne Seminarräume für bis zu 40 bzw. 15–20 Personen, Buffetbereich, Pausenterrasse, Übernachtung, regionale Küche und Wellness im Redltalhof.">
+  <PageHero
+    crumb="Seminare"
+    eyebrow="Seminarhotel"
+    title="Arbeiten mit <em>Weitblick.</em>"
+    lead="Zwei moderne Seminarräume mitten in der Natur – für Klausuren, Workshops, Schulungen und Teamtage, die in Erinnerung bleiben."
+    seed={47}
+    house
+  />
+
+  <section class="section" aria-labelledby="raeume">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Die Räume</p>
+          <h2 id="raeume" data-split>Zwei Räume, <em>ein Gedanke.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Beide Seminarräume sind technisch auf dem aktuellen Stand – und doch von allem umgeben, was konzentriertes Arbeiten
+          leicht macht: Licht, Luft und Ruhe.
+        </p>
+      </div>
+
+      <div class="srooms">
+        {
+          rooms.map((r, i) => (
+            <article class="sroom" data-reveal style={`--d:${i * 150}`}>
+              <div class="sroom__media frame">
+                <Photo name={r.photo} illustration={r.illu} alt={r.name} sizes="(min-width: 900px) 45vw, 100vw" />
+                <span class="sroom__cap">
+                  <span class="num">{r.capacity}</span>
+                  <small>Personen</small>
+                </span>
+              </div>
+              <div class="sroom__body">
+                <h3>{r.name}</h3>
+                <p class="sroom__capline">{r.capLabel}</p>
+                <div class="seats" aria-hidden="true">
+                  {Array.from({ length: 40 }, (_, k) => (
+                    <i class:list={[k < r.capacity && 'on']} style={`--k:${k}`} />
+                  ))}
+                </div>
+                <p>{r.text}</p>
+                <ul class="check-list">
+                  {r.features.map((f) => (
+                    <li>{f}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="warum">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Warum im Redltal</p>
+        <h2 id="warum" data-split>Gute Ideen <em>brauchen Platz.</em></h2>
+      </div>
+      <div class="reasons">
+        {
+          reasons.map((r, i) => (
+            <div class="reason" data-reveal style={`--d:${(i % 3) * 120}`}>
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d={r.i} />
+              </svg>
+              <h3>{r.t}</h3>
+              <p>{r.d}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section linen" aria-labelledby="rechner">
+    <div class="container grid-2 grid-2--wide-right calc-wrap">
+      <div>
+        <p class="eyebrow" data-reveal>Richtpreis-Rechner</p>
+        <h2 id="rechner" data-split>Was kostet <em>Ihr Seminar?</em></h2>
+        <p class="lead" data-reveal style="margin-top:1.5rem">
+          Schieben, klicken, staunen: Hier sehen Sie in Sekunden einen unverbindlichen Richtwert für Seminarpauschale und
+          Übernachtung. Ihr persönliches Angebot erstellen wir gerne individuell.
+        </p>
+        <p class="fineprint" data-reveal style="margin-top:1.5rem">
+          Grundlage: Seminarpauschale {euro(prices.seminarPackage)} pro Person und Tag, Übernachtung pro Person und Nacht mit
+          Frühstück ab {euro(prices.breakfast.double)} bzw. Vollpension ab {euro(prices.fullBoard.double)} (Doppelzimmer)
+          zzgl. Ortstaxe {euro(prices.cityTax)}. Alle Angaben ohne Gewähr.
+        </p>
+      </div>
+
+      <form class="calc" data-calc data-prices={JSON.stringify(prices)} data-reveal="scale" onsubmit="return false">
+        <label class="calc__row">
+          <span class="calc__label">Teilnehmende <strong data-out="people">12</strong></span>
+          <input type="range" name="people" min="2" max={facts.seminarLarge} value="12" />
+        </label>
+        <label class="calc__row">
+          <span class="calc__label">Seminartage <strong data-out="days">2</strong></span>
+          <input type="range" name="days" min="1" max="5" value="2" />
+        </label>
+        <fieldset class="calc__row">
+          <legend class="calc__label">Übernachtung</legend>
+          <div class="seg">
+            <label><input type="radio" name="board" value="none" /><span>Ohne</span></label>
+            <label><input type="radio" name="board" value="breakfast" /><span>Frühstück</span></label>
+            <label><input type="radio" name="board" value="fullBoard" checked /><span>Vollpension</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="calc__row">
+          <legend class="calc__label">Zimmer</legend>
+          <div class="seg">
+            <label><input type="radio" name="room" value="double" checked /><span>Doppelzimmer</span></label>
+            <label><input type="radio" name="room" value="single" /><span>Einzelzimmer</span></label>
+          </div>
+        </fieldset>
+        <label class="calc__check">
+          <input type="checkbox" name="arrive-before" />
+          <span>Anreise schon am Vorabend</span>
+        </label>
+
+        <dl class="calc__out">
+          <div><dt>Seminarpauschale</dt><dd class="num" data-out="seminar">–</dd></div>
+          <div><dt>Übernachtung (Nächte: <span data-out="nights">1</span>, inkl. Ortstaxe)</dt><dd class="num" data-out="stay">–</dd></div>
+          <div class="calc__total"><dt>Richtwert gesamt</dt><dd class="num" data-out="total">–</dd></div>
+          <div class="calc__pp"><dt>pro Person</dt><dd class="num" data-out="pp">–</dd></div>
+        </dl>
+        <a class="btn" href="#anfrage">Angebot anfragen <span class="arrow"><Arrow /></span></a>
+      </form>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="ablauf">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>So einfach geht's</p>
+        <h2 id="ablauf" data-split>In drei Schritten <em>zum Seminar.</em></h2>
+      </div>
+      <ol class="steps">
+        {
+          steps.map((s, i) => (
+            <li data-reveal style={`--d:${i * 150}`}>
+              <span class="steps__n num">{s.n}</span>
+              <h3>{s.t}</h3>
+              <p>{s.d}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="anfrage-title">
+    <div class="container container--narrow">
+      <p class="eyebrow" data-reveal>Seminar anfragen</p>
+      <h2 id="anfrage-title" data-split style="margin-bottom:2.5rem">Erzählen Sie uns <em>von Ihrem Vorhaben.</em></h2>
+      <div data-reveal><InquiryForm preset="Seminar" /></div>
+      <p class="fineprint" style="margin-top:2rem">
+        Lieber persönlich? <a href={url('/kontakt/')}>Alle Kontaktmöglichkeiten</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .srooms {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
+  @media (min-width: 900px) {
+    .srooms {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .sroom {
+    display: grid;
+    gap: 1.8rem;
+    align-content: start;
+  }
+  .sroom__media {
+    aspect-ratio: 4 / 3;
+  }
+  .sroom__cap {
+    position: absolute;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 108px !important;
+    height: 108px !important;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--ink);
+    line-height: 1;
+    text-align: center;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+  }
+  .sroom__cap .num {
+    font-size: 2.4rem;
+    align-self: end;
+  }
+  .sroom__cap small {
+    align-self: start;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 0.3rem;
+  }
+  .sroom__body {
+    display: grid;
+    gap: 1rem;
+  }
+  .sroom__body p {
+    margin: 0;
+    color: var(--text-soft);
+  }
+  .sroom__capline {
+    font-weight: 700;
+    color: var(--amber) !important;
+  }
+  .seats {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 5px;
+    max-width: 360px;
+  }
+  .seats i {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.4s var(--ease);
+    transition-delay: calc(var(--k) * 18ms);
+  }
+  .sroom.is-in .seats i.on {
+    background: var(--forest-600);
+  }
+
+  .reasons {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: 1fr;
+    background: var(--line-inv);
+    border: 1px solid var(--line-inv);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  @media (min-width: 640px) {
+    .reasons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1000px) {
+    .reasons {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .reason {
+    background: var(--forest-900);
+    padding: clamp(1.8rem, 3vw, 2.6rem);
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+    transition: background 0.5s var(--ease);
+  }
+  .reason:hover {
+    background: var(--forest-800);
+  }
+  .reason svg {
+    color: var(--amber-2);
+  }
+  .reason p {
+    margin: 0;
+    color: var(--text-inv-soft);
+    font-size: 0.98rem;
+  }
+
+  .calc-wrap {
+    align-items: start;
+  }
+  .calc {
+    display: grid;
+    gap: 1.6rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--forest-900);
+    color: var(--text-inv);
+    box-shadow: 0 40px 80px -40px rgb(16 26 20 / 0.6);
+  }
+  .calc__row {
+    display: grid;
+    gap: 0.8rem;
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .calc__label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-inv-soft);
+    padding: 0;
+    width: 100%;
+  }
+  .calc__label strong {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0;
+    color: var(--amber-2);
+  }
+  .calc input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: rgb(255 255 255 / 0.15);
+    accent-color: var(--amber);
+  }
+  .calc input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--amber-2);
+    border: 4px solid var(--forest-900);
+    box-shadow: 0 0 0 1px var(--amber-2);
+    cursor: grab;
+  }
+  .calc input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--amber-2);
+    border: 4px solid var(--forest-900);
+    cursor: grab;
+  }
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.35rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.06);
+  }
+  .seg label {
+    flex: 1;
+    position: relative;
+    cursor: pointer;
+  }
+  .seg input {
+    position: absolute;
+    opacity: 0;
+  }
+  .seg span {
+    display: block;
+    text-align: center;
+    padding: 0.65rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .seg input:checked + span {
+    background: var(--amber-2);
+    color: var(--ink);
+  }
+  .seg input:focus-visible + span {
+    outline: 2px solid var(--amber-2);
+    outline-offset: 2px;
+  }
+  .calc__check {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .calc__check input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--amber);
+  }
+  .calc__out {
+    margin: 0;
+    display: grid;
+    gap: 0.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line-inv);
+  }
+  .calc__out > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.35rem;
+  }
+  .calc__out dt {
+    font-size: 0.9rem;
+    color: var(--text-inv-soft);
+  }
+  .calc__out dd {
+    margin: 0;
+    font-size: 1.2rem;
+    white-space: nowrap;
+  }
+  .calc__total dt {
+    color: var(--text-inv);
+    font-weight: 700;
+  }
+  .calc__total dd {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    color: var(--amber-2);
+    font-weight: 300;
+  }
+  .calc .btn {
+    justify-self: start;
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    counter-reset: s;
+  }
+  .steps li {
+    position: relative;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 0.8rem;
+  }
+  .steps li::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 3rem;
+    height: 2px;
+    background: var(--amber);
+  }
+  .steps__n {
+    font-size: 3.5rem;
+    line-height: 1;
+    font-weight: 300;
+    color: var(--amber);
+  }
+  .steps p {
+    color: var(--text-soft);
+    margin: 0;
+  }
+</style>

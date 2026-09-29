@@ -1,0 +1,93 @@
+---
+import '../styles/global.css';
+import '../styles/scene.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, openingHours, prices } from '../data/site';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  headerTone?: 'transparent' | 'solid';
+}
+
+const { title, description = site.description, headerTone = 'transparent' } = Astro.props;
+const fullTitle = title ? `${title} · ${site.fullName}` : `${site.fullName} · Redleiten im Hausruck`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['Hotel', 'Restaurant'],
+  name: site.fullName,
+  description: site.description,
+  url: Astro.site?.toString(),
+  telephone: site.phone,
+  email: site.email,
+  servesCuisine: ['Österreichisch', 'Regional', 'International'],
+  priceRange: `ab ${prices.breakfast.double.toFixed(2).replace('.', ',')} € p. P.`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    postalCode: site.address.zip,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    addressCountry: site.address.countryCode,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lon },
+  openingHours: openingHours.schema,
+  amenityFeature: ['Hallenbad', 'Sauna', 'Infrarotkabine', 'Dampfbad', 'Kneippbereich', 'Seminarräume'].map((name) => ({
+    '@type': 'LocationFeatureSpecification',
+    name,
+    value: true,
+  })),
+};
+---
+
+<!doctype html>
+<html lang="de-AT" data-time="dusk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <meta name="theme-color" content="#101a14" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_AT" />
+    <meta property="og:site_name" content={site.fullName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(url('/og-image.png'), Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      // Tageszeit vor dem ersten Rendern setzen – kein Aufblitzen
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var h = new Date().getHours();
+        var t = h >= 5 && h < 9 ? 'dawn' : h >= 9 && h < 17 ? 'day' : h >= 17 && h < 21 ? 'dusk' : 'night';
+        try {
+          var s = sessionStorage.getItem('rt-time');
+          if (s) t = s;
+        } catch (e) {}
+        d.dataset.time = t;
+      })();
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body data-header={headerTone}>
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <div class="grain" aria-hidden="true"></div>
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<Base title={title} description={description} headerTone="solid">
+  <section class="legal">
+    <div class="container container--narrow">
+      <p class="eyebrow">Rechtliches</p>
+      <h1>{title}</h1>
+      <div class="legal__body">
+        <slot />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal {
+    padding-block: calc(var(--header-h) + clamp(3rem, 8vw, 6rem)) clamp(4rem, 8vw, 7rem);
+  }
+  .legal h1 {
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    margin-bottom: 3rem;
+  }
+  .legal__body :global(h2) {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    margin: 2.8rem 0 1rem;
+  }
+  .legal__body :global(p),
+  .legal__body :global(li) {
+    color: var(--text-soft);
+  }
+  .legal__body :global(.todo) {
+    background: rgb(211 154 78 / 0.22);
+    padding: 0.05em 0.35em;
+    border-radius: 4px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .legal__body :global(dl) {
+    display: grid;
+    grid-template-columns: minmax(140px, auto) 1fr;
+    gap: 0.6rem 1.5rem;
+    margin: 0;
+  }
+  .legal__body :global(dt) {
+    font-weight: 700;
+  }
+  .legal__body :global(dd) {
+    margin: 0;
+    color: var(--text-soft);
+  }
+  @media (max-width: 560px) {
+    .legal__body :global(dl) {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .legal__body :global(dd) {
+      margin-bottom: 0.8rem;
+    }
+  }
+</style>

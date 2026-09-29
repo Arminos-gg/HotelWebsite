@@ -1,0 +1,89 @@
+---
+import Landscape from './Landscape.astro';
+import { url } from '../lib/url';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  seed?: number;
+  house?: boolean;
+  crumb: string;
+}
+const { eyebrow, title, lead, seed = 23, house = false, crumb } = Astro.props;
+---
+
+<section class="phero" aria-labelledby="phero-title">
+  <Landscape seed={seed} house={house} compact />
+  <div class="phero__content container">
+    <nav class="phero__crumb" aria-label="Brotkrümelnavigation" data-reveal>
+      <a href={url('/')}>Start</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{crumb}</span>
+    </nav>
+    <p class="eyebrow" data-reveal style="--d:150">{eyebrow}</p>
+    <h1 id="phero-title" data-split set:html={title} />
+    {lead && <p class="phero__lead" data-reveal style="--d:500">{lead}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .phero {
+    position: relative;
+    min-height: 88vh;
+    min-height: 88svh;
+    display: grid;
+    align-items: end;
+    color: var(--linen);
+    overflow: hidden;
+    background: var(--forest-900);
+  }
+  .phero__content {
+    position: relative;
+    z-index: 2;
+    padding-top: calc(var(--header-h) + 3rem);
+    padding-bottom: clamp(3rem, 9vh, 6rem);
+  }
+  .phero h1 {
+    max-width: 14ch;
+    text-shadow: 0 6px 40px rgb(0 0 0 / 0.3);
+  }
+  .phero :global(h1 em) {
+    color: var(--amber-2);
+  }
+  .phero .eyebrow {
+    color: var(--amber-2);
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.4);
+  }
+  .phero__lead {
+    max-width: 46ch;
+    margin-top: 1.6rem;
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+    line-height: 1.6;
+    color: rgb(243 238 228 / 0.9);
+    text-shadow: 0 1px 16px rgb(0 0 0 / 0.5);
+  }
+  .phero__crumb {
+    display: flex;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+    opacity: 0.85;
+  }
+  .phero__crumb a {
+    text-decoration: none;
+  }
+  .phero__crumb a:hover {
+    color: var(--amber-2);
+  }
+  /* Titel sitzt im unteren Bildteil – Wald dunkler abdecken */
+  .phero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(0deg, rgb(10 16 13 / 0.78) 0%, rgb(10 16 13 / 0.35) 45%, transparent 70%);
+  }
+</style>

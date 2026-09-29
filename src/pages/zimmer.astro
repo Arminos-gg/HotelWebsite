@@ -1,0 +1,229 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Arrow from '../components/Arrow.astro';
+import { prices, facts, euro } from '../data/site';
+import { url } from '../lib/url';
+
+const rooms = [
+  {
+    name: 'Doppelzimmer',
+    tag: 'Für zwei',
+    text: 'Zwei Menschen, ein Blick ins Grüne. Ruhige Zimmer mit eigenem Bad und natürlichen Materialien – für erholsame Nächte nach einem langen Tag.',
+    features: ['Eigenes Bad', 'Natürliche Materialien', 'Wellnessbereich inklusive'],
+    from: prices.breakfast.double,
+    unit: 'p. P. / Nacht inkl. Frühstück',
+    photo: 'zimmer-doppel',
+    illu: 'zimmer',
+  },
+  {
+    name: 'Einzelzimmer',
+    tag: 'Für Seminargäste',
+    text: 'Ihr eigener Rückzugsort nach dem Seminartag: ruhig, gemütlich und mit allem, was man für eine gute Nacht braucht.',
+    features: ['Eigenes Bad', 'Ruhige Lage im Grünen', 'Wellnessbereich inklusive'],
+    from: prices.breakfast.single,
+    unit: 'pro Nacht inkl. Frühstück',
+    photo: 'zimmer-einzel',
+    illu: 'zimmer-tag',
+  },
+  {
+    name: 'Familiensuiten',
+    tag: 'Für kleine Familien',
+    text: 'Zwei kleine Suiten mit etwas mehr Platz – damit Groß und Klein gemeinsam ankommen und durchatmen können.',
+    features: ['Mehr Platz für Familien', 'Eigenes Bad', 'Hallenbad für kleine Wasserratten'],
+    from: null,
+    unit: 'Preis auf Anfrage',
+    photo: 'suite-familie',
+    illu: 'familie',
+  },
+  {
+    name: 'Große Suite',
+    tag: 'Mit Balkon',
+    text: 'Großzügiger Wohn-Essraum mit kleiner Küchenzeile, eigenes Schlafzimmer, Bad mit Dusche und WC – und ein schöner, geschützter Balkon unter dem Dachvorsprung.',
+    features: ['Wohn-Essraum mit Küchenzeile', 'Separates Schlafzimmer', 'Geschützter Balkon'],
+    from: null,
+    unit: 'Preis auf Anfrage',
+    photo: 'suite-gross',
+    illu: 'balkon',
+  },
+];
+---
+
+<Base title="Zimmer & Suiten" description="Zimmer und Suiten im Redltalhof: 30 Betten, natürliche Materialien, Wellnessbereich mit Hallenbad inklusive. Preise für Übernachtung mit Frühstück oder Vollpension.">
+  <PageHero
+    crumb="Zimmer"
+    eyebrow="Zimmer & Suiten"
+    title="Schlafen, wo <em>der Wald rauscht.</em>"
+    lead={`${facts.beds} Betten, ehrliche Materialien und eine Stille, die man in der Stadt längst vergessen hat.`}
+    seed={31}
+  />
+
+  <section class="section">
+    <div class="container grid-2 grid-2--wide-left">
+      <div>
+        <p class="eyebrow" data-reveal>Ankommen</p>
+        <h2 data-split>Holz, Leinen <em>und ganz viel Ruhe.</em></h2>
+      </div>
+      <p class="lead" data-reveal style="--d:200">
+        Unsere Zimmer tragen die Handschrift der Renovierung: Holz, Leder, Leinen, Granit und Schmiedeeisen – zusammengeführt mit
+        Sinn für das Moderne. Ob für eine Seminarnacht, das Familienwochenende oder eine kleine Auszeit: Hier schlafen Sie
+        tief.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight" aria-label="Zimmerkategorien">
+    <div class="container rooms">
+      {
+        rooms.map((r, i) => (
+          <article class:list={['room', i % 2 && 'room--flip']}>
+            <div class="room__media frame" data-reveal="scale" data-parallax="0.06">
+              <Photo name={r.photo} illustration={r.illu} alt={r.name} sizes="(min-width: 900px) 55vw, 100vw" />
+            </div>
+            <div class="room__body" data-reveal style="--d:150">
+              <span class="tag">{r.tag}</span>
+              <h3 class="h2">{r.name}</h3>
+              <p>{r.text}</p>
+              <ul class="check-list">
+                {r.features.map((f) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+              <div class="room__price">
+                {r.from ? (
+                  <>
+                    <span class="room__from">ab</span>
+                    <span class="num room__amount">{euro(r.from)}</span>
+                  </>
+                ) : null}
+                <span class="room__unit">{r.unit}</span>
+              </div>
+              <a class="link" href={url('/kontakt/#anfrage')}>
+                {r.name} anfragen <Arrow />
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="preise">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow" data-reveal>Preise</p>
+        <h2 id="preise" data-split>Klar & <em>ehrlich.</em></h2>
+        <p class="lead" data-reveal style="margin-top:1.5rem">
+          Der Wellnessbereich mit Hallenbad, Sauna, Dampfbad, Infrarotkabine und Kneippbereich ist im Zimmerpreis bereits
+          enthalten.
+        </p>
+      </div>
+      <div data-reveal style="--d:200">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Pro Person & Nacht</th>
+              <th scope="col" class="num">Doppelzimmer</th>
+              <th scope="col" class="num">Einzelzimmer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="price-row">mit Frühstück</th>
+              <td class="num">{euro(prices.breakfast.double)}</td>
+              <td class="num">{euro(prices.breakfast.single)}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="price-row">mit Vollpension</th>
+              <td class="num">{euro(prices.fullBoard.double)}</td>
+              <td class="num">{euro(prices.fullBoard.single)}</td>
+            </tr>
+            <tr>
+              <th scope="row" class="price-row">Ortstaxe</th>
+              <td class="num" colspan="2">{euro(prices.cityTax)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="fineprint" style="margin-top:1rem">
+          Preise pro Person und Nacht, Ortstaxe pro Person und Nacht. Suiten und Gruppenpreise auf Anfrage. Änderungen und
+          Irrtümer vorbehalten.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section linen" aria-labelledby="anfrage-title">
+    <div class="container container--narrow">
+      <p class="eyebrow" data-reveal>Zimmer anfragen</p>
+      <h2 id="anfrage-title" data-split style="margin-bottom:2.5rem">Ihr Zimmer <em>im Redltal.</em></h2>
+      <div data-reveal><InquiryForm preset="Zimmer" /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .rooms {
+    display: grid;
+    gap: clamp(4rem, 9vw, 8rem);
+  }
+  .room {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 4.5rem);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .room {
+      grid-template-columns: 1.3fr 1fr;
+    }
+    .room--flip {
+      grid-template-columns: 1fr 1.3fr;
+    }
+    .room--flip .room__media {
+      order: 2;
+    }
+  }
+  .room__media {
+    aspect-ratio: 5 / 4;
+  }
+  .room__body {
+    display: grid;
+    gap: 1.3rem;
+    justify-items: start;
+  }
+  .room__body p {
+    color: var(--text-soft);
+    margin: 0;
+    max-width: 44ch;
+  }
+  .room__price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    width: 100%;
+  }
+  .room__from {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+  }
+  .room__amount {
+    font-size: 2.2rem;
+    line-height: 1;
+  }
+  .room__unit {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+  }
+  .price-row {
+    font-family: var(--serif);
+    font-size: 1.2rem !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    font-weight: 400 !important;
+    color: var(--text-inv) !important;
+  }
+</style>

@@ -1,0 +1,965 @@
+---
+// Gezeichnete Motive als stimmungsvolle Platzhalter, bis echte Fotos vorliegen.
+// Alle Szenen im gleichen Stil: dunkler Grund, Leinen-Linien, warmes Bernstein-Licht.
+import { makeRidge, ridgePath, forest, spruce, rng, alps } from '../lib/landscape';
+import { uid } from '../lib/uid';
+
+interface Props {
+  name: string;
+  label: string;
+  class?: string;
+}
+const { name, label, class: cls = '' } = Astro.props;
+
+const id = uid('il');
+const g = (k: string) => `${id}-${k}`;
+const u = (k: string) => `url(#${g(k)})`;
+
+// Szenen, die Waldkanten brauchen
+const rowA = makeRidge(21, 640, [
+  [22, 0.006],
+  [8, 0.02],
+]);
+const rowB = makeRidge(22, 700, [
+  [18, 0.005],
+  [9, 0.017],
+]);
+const rowC = makeRidge(23, 780, [
+  [26, 0.004],
+  [10, 0.013],
+]);
+const trees = (ridge: (x: number) => number, seed: number, h: [number, number], sp: [number, number] = [14, 26]) =>
+  ridgePath(ridge, 20, -40, 1040, 1010) + forest(ridge, seed, { spacing: sp, height: h, x0: -40, x1: 1040, sink: 6 });
+
+const forestFar = trees(rowA, 31, [30, 70]);
+const forestMid = trees(rowB, 32, [60, 130], [20, 36]);
+const forestNear = trees(rowC, 33, [120, 260], [34, 60]);
+
+const rr = rng(77);
+const pathTrees = [
+  [60, 980, 760],
+  [210, 900, 520],
+  [320, 830, 330],
+  [395, 790, 200],
+  [610, 790, 200],
+  [690, 830, 330],
+  [800, 900, 520],
+  [950, 980, 760],
+]
+  .map(([x, y, h]) => spruce(x, y, h, h * 0.36, rr, true))
+  .join('');
+
+const winRidge = makeRidge(41, 520, [
+  [16, 0.012],
+  [6, 0.04],
+]);
+const windowTrees = ridgePath(winRidge, 20, 0, 1000, 1010) + forest(winRidge, 42, { spacing: [16, 30], height: [60, 150], x0: 0, x1: 1000 });
+
+const alpsD = alps(51, 600).replace(/M-40 900/, 'M-40 1000').replace(/Z$/, '');
+const seeAlps = `${alpsD}Z`;
+
+const steam = [0, 1, 2];
+---
+
+<svg
+  class:list={['illu', `illu--${name}`, cls]}
+  viewBox="0 0 1000 1000"
+  preserveAspectRatio="xMidYMid slice"
+  role="img"
+  aria-label={label}
+>
+  <defs>
+    <radialGradient id={g('bg-cool')} cx="50%" cy="42%" r="75%">
+      <stop offset="0" stop-color="#2b4434"></stop>
+      <stop offset="0.6" stop-color="#132019"></stop>
+      <stop offset="1" stop-color="#0a100d"></stop>
+    </radialGradient>
+    <radialGradient id={g('bg-warm')} cx="50%" cy="55%" r="75%">
+      <stop offset="0" stop-color="#4a3222"></stop>
+      <stop offset="0.55" stop-color="#1f1510"></stop>
+      <stop offset="1" stop-color="#0d0907"></stop>
+    </radialGradient>
+    <radialGradient id={g('bg-water')} cx="50%" cy="40%" r="80%">
+      <stop offset="0" stop-color="#1f4d4f"></stop>
+      <stop offset="0.6" stop-color="#0e2729"></stop>
+      <stop offset="1" stop-color="#061314"></stop>
+    </radialGradient>
+    <radialGradient id={g('glow')}>
+      <stop offset="0" stop-color="#ffcf7d" stop-opacity="0.85"></stop>
+      <stop offset="0.35" stop-color="#e8a24f" stop-opacity="0.3"></stop>
+      <stop offset="1" stop-color="#e8a24f" stop-opacity="0"></stop>
+    </radialGradient>
+    <radialGradient id={g('glow-cool')}>
+      <stop offset="0" stop-color="#fff6dc" stop-opacity="0.8"></stop>
+      <stop offset="0.4" stop-color="#fff6dc" stop-opacity="0.2"></stop>
+      <stop offset="1" stop-color="#fff6dc" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id={g('dusk')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1d1b3a"></stop>
+      <stop offset="0.55" stop-color="#8d4f68"></stop>
+      <stop offset="0.8" stop-color="#e98d5c"></stop>
+      <stop offset="1" stop-color="#f6b27a"></stop>
+    </linearGradient>
+    <linearGradient id={g('night')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050b15"></stop>
+      <stop offset="1" stop-color="#1d3148"></stop>
+    </linearGradient>
+    <linearGradient id={g('day')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f86ad"></stop>
+      <stop offset="1" stop-color="#dcebe6"></stop>
+    </linearGradient>
+    <linearGradient id={g('water')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2d7a7a"></stop>
+      <stop offset="1" stop-color="#0b3236"></stop>
+    </linearGradient>
+    <linearGradient id={g('ray')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff1c9" stop-opacity="0.45"></stop>
+      <stop offset="1" stop-color="#fff1c9" stop-opacity="0"></stop>
+    </linearGradient>
+    <linearGradient id={g('fire')} x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ffdd8a"></stop>
+      <stop offset="0.5" stop-color="#f08a36"></stop>
+      <stop offset="1" stop-color="#b8412a"></stop>
+    </linearGradient>
+    <filter id={g('blur')} x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="24"></feGaussianBlur>
+    </filter>
+    <filter id={g('soft')} x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8"></feGaussianBlur>
+    </filter>
+  </defs>
+
+  {/* ---------------- Haus am Abend ---------------- */}
+  {
+    name === 'haus' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('dusk')} />
+        <circle cx="770" cy="300" r="140" fill={u('glow-cool')} />
+        <circle cx="770" cy="300" r="30" fill="#fbe9cf" />
+        <path d={forestFar} fill="#45395a" />
+        <path d="M0 760C260 720 620 745 1000 715V1000H0Z" fill="#191620" />
+        <g transform="translate(0 20)">
+          <path d="M140 735V650H320V735Z" fill="#221e2b" />
+          <path d="M122 655L172 596H300L336 655Z" fill="#14121a" />
+          <path d="M290 740V590H700V740Z" fill="#27222f" />
+          <path d="M262 596L352 488H638L728 596Z" fill="#14121a" />
+          <path d="M262 596L352 488H638L728 596" fill="none" stroke="#d39a4e" stroke-opacity=".35" stroke-width="3" />
+          <rect x="560" y="440" width="30" height="56" fill="#14121a" />
+          <ellipse cx="495" cy="660" rx="260" ry="90" fill="#ffcf7d" opacity=".16" filter={u('blur')} />
+          <g fill="#ffcf7d">
+            {[318, 376, 434, 556, 614, 666].map((x) => (
+              <rect x={x} y="612" width="26" height="34" rx="2" opacity=".92" />
+            ))}
+            {[318, 376, 614, 666].map((x) => (
+              <rect x={x} y="672" width="26" height="34" rx="2" opacity=".85" />
+            ))}
+            <rect x="178" y="684" width="22" height="26" rx="2" opacity=".7" />
+            <rect x="252" y="684" width="22" height="26" rx="2" opacity=".6" />
+          </g>
+          <path d="M470 740V690a25 25 0 0 1 50 0V740Z" fill="#ffcf7d" opacity=".9" />
+          <circle cx="545" cy="684" r="6" fill="#fff1c9" />
+          <circle cx="545" cy="684" r="40" fill={u('glow')} />
+          <text x="495" y="572" text-anchor="middle" font-family="Fraunces Variable, Georgia, serif" font-size="22" letter-spacing="6" fill="#d39a4e" opacity=".85">REDLTALHOF</text>
+        </g>
+        <g fill="#0f0d14">
+          <rect x="818" y="600" width="16" height="160" />
+          {[
+            [826, 520, 90],
+            [770, 570, 70],
+            [880, 575, 72],
+            [800, 470, 60],
+            [860, 480, 58],
+            [826, 600, 70],
+          ].map(([cx, cy, r]) => (
+            <circle cx={cx} cy={cy} r={r} />
+          ))}
+        </g>
+        <g class="smoke" fill="#fbe9cf" filter={u('soft')}>
+          {steam.map((i) => (
+            <circle cx="575" cy="440" r={10 + i * 4} opacity=".18" style={`animation-delay:-${i * 2.2}s`} />
+          ))}
+        </g>
+        <path d="M0 870C300 830 700 860 1000 820V1000H0Z" fill="#0c0a10" />
+        <g fill="#fff2a8" class="sparkle">
+          <circle cx="120" cy="820" r="3" />
+          <circle cx="260" cy="860" r="2.5" />
+          <circle cx="720" cy="830" r="3" />
+          <circle cx="900" cy="880" r="2.5" />
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Stube mit Kachelofen ---------------- */}
+  {
+    name === 'stube' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-warm')} />
+        <g stroke="#efe9dc" stroke-opacity=".06" stroke-width="3">
+          {Array.from({ length: 17 }, (_, i) => (
+            <line x1={i * 62} y1="0" x2={i * 62} y2="790" />
+          ))}
+        </g>
+        <rect x="80" y="230" width="170" height="290" rx="6" fill={u('night')} stroke="#efe9dc" stroke-opacity=".35" stroke-width="8" />
+        <line x1="165" y1="230" x2="165" y2="520" stroke="#efe9dc" stroke-opacity=".35" stroke-width="6" />
+        <line x1="80" y1="375" x2="250" y2="375" stroke="#efe9dc" stroke-opacity=".35" stroke-width="6" />
+        <circle cx="210" cy="280" r="14" fill="#f5e6c8" />
+        <rect x="0" y="790" width="1000" height="210" fill="#0d0907" />
+        <g stroke="#efe9dc" stroke-opacity=".05" stroke-width="2">
+          {[-400, -200, 0, 200, 400, 600, 800, 1000, 1200, 1400].map((x) => (
+            <line x1={500} y1="790" x2={x} y2="1000" />
+          ))}
+        </g>
+        <ellipse cx="500" cy="860" rx="360" ry="70" fill="#ffb45e" opacity=".32" filter={u('blur')} />
+        <rect x="230" y="740" width="540" height="56" rx="10" fill="#3b2819" />
+        <rect x="230" y="740" width="540" height="12" rx="6" fill="#5a3b26" />
+        <rect x="320" y="300" width="360" height="46" rx="14" fill="#3f5f4d" />
+        <g>
+          {Array.from({ length: 6 }, (_, r) =>
+            Array.from({ length: 5 }, (_, c) => (
+              <g>
+                <rect x={340 + c * 64} y={352 + r * 64} width="58" height="58" rx="8" fill={(r + c) % 2 ? '#2f4a3c' : '#355443'} />
+                <path d={`M${352 + c * 64} ${366 + r * 64}q12 -8 24 0`} stroke="#cfe3d3" stroke-opacity=".35" stroke-width="3" fill="none" />
+              </g>
+            )),
+          )}
+        </g>
+        <path d="M436 740V650a64 64 0 0 1 128 0V740Z" fill="#150c07" />
+        <ellipse cx="500" cy="700" rx="140" ry="110" fill={u('glow')} />
+        <g class="flame">
+          <path d="M470 738c-18-30 4-52 14-78 8 22 26 30 18 58 16-12 18-32 14-44 22 26 22 50 6 64Z" fill={u('fire')} />
+          <path d="M492 738c-6-16 4-26 10-38 6 14 14 22 6 38Z" fill="#fff1c9" />
+        </g>
+        <rect x="690" y="704" width="36" height="36" rx="4" fill="#d39a4e" opacity=".85" />
+        <path d="M726 712h10a8 8 0 0 1 0 16h-10" stroke="#d39a4e" stroke-width="5" fill="none" opacity=".85" />
+      </g>
+    )
+  }
+
+  {/* ---------------- Gedeckter Tisch ---------------- */}
+  {
+    name === 'teller' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-warm')} />
+        <circle cx="730" cy="420" r="300" fill={u('glow')} />
+        <path d="M0 560H1000V1000H0Z" fill="#2a1d15" />
+        <g stroke="#efe9dc" stroke-opacity=".06" stroke-width="3" fill="none">
+          <path d="M0 620C300 610 700 640 1000 620" />
+          <path d="M0 720C300 700 700 740 1000 715" />
+          <path d="M0 850C300 830 700 870 1000 840" />
+        </g>
+        <path d="M0 560H1000" stroke="#efe9dc" stroke-opacity=".25" stroke-width="3" />
+        <ellipse cx="460" cy="720" rx="270" ry="92" fill="#efe9dc" />
+        <ellipse cx="460" cy="712" rx="196" ry="62" fill="#e1d8c6" />
+        <ellipse cx="400" cy="696" rx="70" ry="40" fill="#b8793c" />
+        <ellipse cx="392" cy="684" rx="36" ry="14" fill="#e3a868" opacity=".8" />
+        <ellipse cx="510" cy="704" rx="62" ry="34" fill="#9c5f2c" />
+        <ellipse cx="505" cy="692" rx="28" ry="10" fill="#d68f4c" opacity=".7" />
+        <g fill="#6f7d4e">
+          <ellipse cx="450" cy="670" rx="16" ry="7" transform="rotate(-20 450 670)" />
+          <ellipse cx="470" cy="662" rx="12" ry="5" transform="rotate(25 470 662)" />
+          <ellipse cx="560" cy="690" rx="14" ry="6" transform="rotate(-10 560 690)" />
+        </g>
+        <g class="steam" stroke="#efe9dc" stroke-width="5" stroke-linecap="round" fill="none" stroke-opacity=".3">
+          <path d="M410 640c-20-40 20-60 0-100s20-60 0-90" />
+          <path d="M470 630c-20-40 20-60 0-100s20-60 0-90" style="animation-delay:-1.6s" />
+          <path d="M530 640c-20-40 20-60 0-100s20-60 0-90" style="animation-delay:-3.2s" />
+        </g>
+        <g stroke="#efe9dc" stroke-opacity=".7" stroke-width="7" stroke-linecap="round">
+          <line x1="140" y1="640" x2="120" y2="860" />
+          <line x1="175" y1="640" x2="160" y2="860" />
+        </g>
+        <path d="M790 470c0 60-30 90-70 90s-70-30-70-90Z" fill="#efe9dc" fill-opacity=".14" stroke="#efe9dc" stroke-opacity=".6" stroke-width="4" />
+        <path d="M655 500c10 44 30 58 65 58s55-14 65-58Z" fill="#6b1f2a" />
+        <line x1="720" y1="560" x2="720" y2="660" stroke="#efe9dc" stroke-opacity=".6" stroke-width="5" />
+        <ellipse cx="720" cy="664" rx="44" ry="10" fill="none" stroke="#efe9dc" stroke-opacity=".6" stroke-width="4" />
+        <rect x="846" y="440" width="40" height="160" rx="4" fill="#efe9dc" />
+        <path d="M866 438c-14-18 0-40 0-52 12 14 16 36 0 52Z" fill="#ffcf7d" class="flicker" />
+        <circle cx="866" cy="420" r="80" fill={u('glow')} />
+      </g>
+    )
+  }
+
+  {/* ---------------- Saal für Feste ---------------- */}
+  {
+    name === 'saal' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-warm')} />
+        <path d="M360 300H640V580H360Z" fill="#231812" />
+        <g fill="#f6c985" opacity=".55">
+          <rect x="390" y="340" width="60" height="130" rx="30" />
+          <rect x="470" y="340" width="60" height="130" rx="30" />
+          <rect x="550" y="340" width="60" height="130" rx="30" />
+        </g>
+        <g stroke="#efe9dc" stroke-opacity=".12" stroke-width="3">
+          <line x1="0" y1="0" x2="360" y2="300" />
+          <line x1="1000" y1="0" x2="640" y2="300" />
+          <line x1="0" y1="1000" x2="360" y2="580" />
+          <line x1="1000" y1="1000" x2="640" y2="580" />
+          {[80, 170, 240].map((y) => (
+            <line x1={y * 1.2} y1={y} x2={1000 - y * 1.2} y2={y} />
+          ))}
+        </g>
+        <path d="M455 580H545L860 1000H140Z" fill="#e8e0cf" />
+        <path d="M455 580H545L860 1000H140Z" fill="none" stroke="#d39a4e" stroke-opacity=".3" stroke-width="3" />
+        <g fill="#140d09">
+          {[0, 1, 2, 3, 4].map((i) => {
+            const t = i / 4;
+            const y = 600 + t * t * 360;
+            const s = 16 + t * 60;
+            const xl = 455 - (455 - 140) * ((y - 580) / 420) - s * 1.1;
+            const xr = 545 + (860 - 545) * ((y - 580) / 420) + s * 0.1;
+            return (
+              <g>
+                <rect x={xl} y={y - s * 1.6} width={s} height={s * 1.9} rx={s * 0.2} />
+                <rect x={xr} y={y - s * 1.6} width={s} height={s * 1.9} rx={s * 0.2} />
+              </g>
+            );
+          })}
+        </g>
+        <g fill="#ffcf7d">
+          {[
+            [500, 610, 3],
+            [490, 680, 4],
+            [512, 760, 5],
+            [500, 870, 7],
+          ].map(([x, y, r]) => (
+            <>
+              <circle cx={x} cy={y} r={r} />
+              <circle cx={x} cy={y} r={r * 8} fill={u('glow')} />
+            </>
+          ))}
+        </g>
+        {[
+          [500, 200, 1],
+          [300, 120, 1.6],
+          [700, 120, 1.6],
+        ].map(([x, y, s]) => (
+          <g>
+            <line x1={x} y1="0" x2={x} y2={y} stroke="#efe9dc" stroke-opacity=".3" stroke-width="2" />
+            <path d={`M${x - 26 * s} ${y + 18 * s}a${26 * s} ${22 * s} 0 0 1 ${52 * s} 0Z`} fill="#d39a4e" />
+            <circle cx={x} cy={y + 30 * s} r={90 * s} fill={u('glow')} />
+          </g>
+        ))}
+      </g>
+    )
+  }
+
+  {/* ---------------- Zimmer ---------------- */}
+  {
+    ['zimmer', 'zimmer-tag', 'familie'].includes(name) && (
+      <g>
+        <rect width="1000" height="1000" fill={name === 'zimmer-tag' ? '#1f3327' : u('bg-cool')} />
+        <g>
+          <rect x="520" y="140" width="400" height="480" fill={name === 'zimmer-tag' ? u('day') : u('night')} />
+          {name === 'zimmer-tag' ? (
+            <circle cx="820" cy="230" r="120" fill={u('glow-cool')} />
+          ) : (
+            <>
+              <circle cx="820" cy="230" r="22" fill="#f5e6c8" />
+              <circle cx="820" cy="230" r="90" fill={u('glow-cool')} />
+            </>
+          )}
+          <g transform="translate(520 140) scale(.4 .48)">
+            <path d={windowTrees} fill={name === 'zimmer-tag' ? '#3a5a42' : '#0a121b'} />
+          </g>
+          <rect x="520" y="140" width="400" height="480" fill="none" stroke="#5a3b26" stroke-width="18" />
+          <line x1="720" y1="140" x2="720" y2="620" stroke="#5a3b26" stroke-width="12" />
+          <line x1="520" y1="360" x2="920" y2="360" stroke="#5a3b26" stroke-width="12" />
+          <path d="M490 120C510 300 480 500 520 660H470C440 480 470 300 450 120Z" fill="#e8e0cf" opacity=".9" />
+          {name === 'zimmer-tag' && <path d="M520 620L920 620 1000 1000 360 1000Z" fill="#fff6dc" opacity=".05" />}
+        </g>
+        <rect x="0" y="780" width="1000" height="220" fill="#0a100d" />
+        <rect x="40" y="440" width="440" height="200" rx="14" fill="#6a4529" />
+        <g stroke="#3f2816" stroke-width="3" opacity=".7">
+          {[80, 140, 200, 260, 320, 380, 440].map((x) => (
+            <line x1={x} y1="450" x2={x} y2="630" />
+          ))}
+        </g>
+        {name === 'zimmer-tag' ? (
+          <rect x="120" y="560" width="280" height="80" rx="34" fill="#f3eee4" />
+        ) : (
+          <>
+            <rect x="70" y="560" width="170" height="80" rx="30" fill="#f3eee4" />
+            <rect x="270" y="560" width="170" height="80" rx="30" fill="#efe9dc" />
+          </>
+        )}
+        <path d="M30 640H490L520 820H0Z" fill="#e8e0cf" />
+        <path d="M20 700H505L520 820H0Z" fill={name === 'familie' ? '#c8924a' : '#a9b49b'} />
+        <g stroke={name === 'familie' ? '#7b4a2e' : '#6f7d4e'} stroke-opacity=".6" stroke-width="3" fill="none">
+          <path d="M60 740C160 730 320 760 480 735" />
+          <path d="M40 780C180 770 340 800 505 775" />
+        </g>
+        <rect x="0" y="815" width="520" height="30" fill="#4a3020" />
+        {name === 'familie' ? (
+          <g>
+            <rect x="600" y="650" width="330" height="110" rx="12" fill="#6a4529" />
+            <rect x="620" y="690" width="90" height="50" rx="20" fill="#f3eee4" />
+            <path d="M590 740H940L950 830H580Z" fill="#e8e0cf" />
+            <path d="M585 775H945L950 830H580Z" fill="#6f7d4e" />
+            <rect x="580" y="826" width="370" height="20" fill="#4a3020" />
+            <g transform="translate(860 700)">
+              <circle r="26" fill="#b8793c" />
+              <circle cx="-20" cy="-22" r="10" fill="#b8793c" />
+              <circle cx="20" cy="-22" r="10" fill="#b8793c" />
+              <circle cx="-8" cy="-4" r="3" fill="#2a1d15" />
+              <circle cx="8" cy="-4" r="3" fill="#2a1d15" />
+              <ellipse cy="8" rx="8" ry="6" fill="#e3a868" />
+            </g>
+            <circle cx="760" cy="600" r="200" fill={u('glow')} opacity=".6" />
+          </g>
+        ) : (
+          <>
+            <rect x="560" y="690" width="120" height="130" rx="6" fill="#4a3020" />
+            <path d="M596 690l-10-70h68l-10 70Z" fill="#efe9dc" opacity=".9" />
+            {name !== 'zimmer-tag' && <circle cx="620" cy="660" r="160" fill={u('glow')} />}
+          </>
+        )}
+      </g>
+    )
+  }
+
+  {/* ---------------- Balkon der Suite ---------------- */}
+  {
+    name === 'balkon' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('dusk')} />
+        <circle cx="300" cy="600" r="200" fill={u('glow')} />
+        <circle cx="300" cy="610" r="44" fill="#ffd79a" />
+        <path d={forestFar} fill="#5b4262" />
+        <path d={forestMid} fill="#3a2d45" />
+        <g fill="#1a1216">
+          <path d="M0 0H1000V110H0Z" />
+          {Array.from({ length: 9 }, (_, i) => (
+            <path d={`M${i * 125 - 20} 110l40 0 -30 90h-30Z`} />
+          ))}
+        </g>
+        <rect x="0" y="690" width="1000" height="22" fill="#2a1a12" />
+        <g fill="#2a1a12">
+          {Array.from({ length: 26 }, (_, i) => (
+            <rect x={i * 40 + 6} y="712" width="18" height="200" />
+          ))}
+        </g>
+        <rect x="0" y="900" width="1000" height="100" fill="#140d0a" />
+        <g fill="#0f0a08">
+          <path d="M590 900V760h90v70h70v70h-16v-50h-128v50Z" />
+          <path d="M860 900V770h90v70h50v60h-10v-40h-120v40Z" />
+          <rect x="740" y="800" width="100" height="14" rx="4" />
+          <rect x="786" y="814" width="8" height="86" />
+        </g>
+        <g fill="#d39a4e">
+          <path d="M760 800v-26h14v26Z" opacity=".8" />
+          <path d="M806 800v-30h14v30Z" opacity=".8" />
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Seminarraum ---------------- */}
+  {
+    name === 'seminar' && (
+      <g>
+        <rect width="1000" height="1000" fill="#1a2820" />
+        <g>
+          <rect x="560" y="160" width="400" height="520" fill={u('day')} />
+          <g transform="translate(560 160) scale(.4 .52)">
+            <path d={windowTrees} fill="#35573f" />
+          </g>
+          <g stroke="#101a14" stroke-width="12">
+            <rect x="560" y="160" width="400" height="520" fill="none" />
+            <line x1="693" y1="160" x2="693" y2="680" />
+            <line x1="826" y1="160" x2="826" y2="680" />
+          </g>
+          <path d="M560 680L960 680 1000 1000 360 1000Z" fill="#fff6dc" opacity=".06" />
+        </g>
+        <rect x="80" y="250" width="400" height="250" rx="8" fill="#efe9dc" />
+        <polyline points="120,450 190,410 250,425 320,360 380,380 440,300" fill="none" stroke="#d39a4e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+        <g fill="#6f7d4e" opacity=".8">
+          <rect x="120" y="290" width="120" height="12" rx="6" />
+          <rect x="120" y="314" width="80" height="12" rx="6" />
+        </g>
+        <g fill="none" stroke="#ffcf7d" stroke-width="5">
+          <ellipse cx="280" cy="90" rx="160" ry="26" />
+          <ellipse cx="280" cy="90" rx="100" ry="16" opacity=".7" />
+          <ellipse cx="760" cy="80" rx="120" ry="20" opacity=".8" />
+        </g>
+        <ellipse cx="280" cy="110" rx="220" ry="60" fill="#ffcf7d" opacity=".12" filter={u('soft')} />
+        <rect x="0" y="760" width="1000" height="240" fill="#101a14" />
+        <rect x="60" y="600" width="520" height="20" rx="6" fill="#6a4529" />
+        {[
+          [620, 0.55],
+          [760, 0.8],
+          [920, 1.15],
+        ].map(([y, s]) => (
+          <g fill="#0b120e">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <rect x={60 + i * 190 * s - (s - 0.55) * 200} y={y} width={120 * s} height={140 * s} rx={26 * s} />
+            ))}
+          </g>
+        ))}
+      </g>
+    )
+  }
+
+  {/* ---------------- Seminarraum mit Lichtdesign ---------------- */}
+  {
+    name === 'seminar-licht' && (
+      <g>
+        <rect width="1000" height="1000" fill="#111a15" />
+        <g stroke="#efe9dc" stroke-opacity=".05" stroke-width="3">
+          {Array.from({ length: 12 }, (_, i) => (
+            <line x1={i * 90} y1="0" x2={i * 90} y2="640" />
+          ))}
+        </g>
+        {[
+          [260, 170, 150],
+          [560, 120, 190],
+          [820, 190, 120],
+        ].map(([cx, cy, rx]) => (
+          <g>
+            <line x1={cx} y1="0" x2={cx} y2={cy - 20} stroke="#efe9dc" stroke-opacity=".25" stroke-width="2" />
+            <ellipse cx={cx} cy={cy} rx={rx * 1.6} ry={rx * 0.9} fill="#ffcf7d" opacity=".1" filter={u('blur')} />
+            <ellipse cx={cx} cy={cy} rx={rx} ry={rx * 0.16} fill="none" stroke="#ffcf7d" stroke-width="7" />
+            <ellipse cx={cx} cy={cy} rx={rx * 0.62} ry={rx * 0.1} fill="none" stroke="#ffe3a8" stroke-width="4" opacity=".8" />
+            <polygon points={`${cx - rx * 0.8},${cy + 14} ${cx + rx * 0.8},${cy + 14} ${cx + rx * 1.4},640 ${cx - rx * 1.4},640`} fill="#ffcf7d" opacity=".05" />
+          </g>
+        ))}
+        <rect x="0" y="640" width="1000" height="360" fill="#0b120e" />
+        <ellipse cx="500" cy="760" rx="330" ry="70" fill="#6a4529" />
+        <ellipse cx="500" cy="752" rx="330" ry="66" fill="#8a5a35" />
+        <ellipse cx="500" cy="752" rx="330" ry="66" fill="#ffcf7d" opacity=".12" />
+        <g fill="#0b120e">
+          {[
+            [170, 700, 0.7],
+            [320, 660, 0.55],
+            [500, 650, 0.5],
+            [680, 660, 0.55],
+            [830, 700, 0.7],
+            [240, 860, 1.1],
+            [760, 860, 1.1],
+          ].map(([x, y, sc]) => (
+            <rect x={x - 50 * sc} y={y - 60 * sc} width={100 * sc} height={130 * sc} rx={26 * sc} />
+          ))}
+        </g>
+        <g fill="#efe9dc" opacity=".8">
+          <rect x="420" y="730" width="60" height="8" rx="4" />
+          <rect x="520" y="745" width="46" height="8" rx="4" />
+          <circle cx="600" cy="738" r="9" fill="none" stroke="#efe9dc" stroke-width="4" />
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Sauna ---------------- */}
+  {
+    name === 'sauna' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-warm')} />
+        <g stroke="#1a0f08" stroke-opacity=".6" stroke-width="3">
+          {Array.from({ length: 16 }, (_, i) => (
+            <line x1="0" y1={i * 60} x2="1000" y2={i * 60} />
+          ))}
+        </g>
+        <circle cx="720" cy="560" r="320" fill={u('glow')} />
+        <g fill="#8a5a35">
+          <rect x="0" y="480" width="600" height="40" rx="6" />
+          <rect x="0" y="690" width="700" height="44" rx="6" />
+        </g>
+        <g fill="#5a3b26">
+          <rect x="0" y="520" width="600" height="14" />
+          <rect x="0" y="734" width="700" height="16" />
+          <rect x="80" y="534" width="24" height="156" />
+          <rect x="460" y="534" width="24" height="156" />
+          <rect x="120" y="750" width="26" height="250" />
+          <rect x="560" y="750" width="26" height="250" />
+        </g>
+        <rect x="690" y="560" width="200" height="260" rx="10" fill="#1d1d1c" />
+        <g stroke="#d39a4e" stroke-opacity=".5" stroke-width="3">
+          <line x1="710" y1="600" x2="870" y2="600" />
+          <line x1="710" y1="640" x2="870" y2="640" />
+        </g>
+        <g>
+          {[
+            [720, 548, 32],
+            [770, 540, 36],
+            [826, 546, 32],
+            [868, 552, 22],
+            [746, 520, 26],
+            [800, 514, 28],
+          ].map(([cx, cy, r]) => (
+            <ellipse cx={cx} cy={cy} rx={r} ry={r * 0.7} fill="#6b6a66" stroke="#2a2a28" stroke-width="3" />
+          ))}
+        </g>
+        <ellipse cx="790" cy="530" rx="130" ry="50" fill="#ff9c4a" opacity=".25" filter={u('soft')} />
+        <g class="cloud" fill="#fff6e6">
+          {steam.map((i) => (
+            <ellipse cx={760 + i * 30} cy="430" rx={90 + i * 20} ry={50 + i * 10} opacity=".14" filter={u('blur')} style={`animation-delay:-${i * 2.5}s`} />
+          ))}
+        </g>
+        <path d="M300 920l20-90h110l20 90Z" fill="#8a5a35" />
+        <g stroke="#1d1d1c" stroke-width="6">
+          <line x1="312" y1="870" x2="438" y2="870" />
+          <line x1="304" y1="905" x2="446" y2="905" />
+        </g>
+        <path d="M400 840l110-140" stroke="#8a5a35" stroke-width="12" stroke-linecap="round" />
+        <circle cx="200" cy="300" r="46" fill="none" stroke="#efe9dc" stroke-opacity=".5" stroke-width="6" />
+        <line x1="200" y1="300" x2="226" y2="280" stroke="#d39a4e" stroke-width="6" stroke-linecap="round" />
+      </g>
+    )
+  }
+
+  {/* ---------------- Infrarot ---------------- */}
+  {
+    name === 'infrarot' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-warm')} />
+        <g>
+          {[160, 400, 640].map((x) => (
+            <g>
+              <rect x={x} y="160" width="200" height="440" rx="10" fill="#6b1f16" />
+              <rect x={x + 20} y="180" width="160" height="400" rx="6" fill="#c2412a" opacity=".6" />
+              <ellipse cx={x + 100} cy="380" rx="170" ry="260" fill="#ff5a2e" opacity=".22" filter={u('blur')} />
+            </g>
+          ))}
+        </g>
+        <rect x="80" y="640" width="840" height="50" rx="8" fill="#8a5a35" />
+        <rect x="80" y="690" width="840" height="16" fill="#5a3b26" />
+        <rect x="140" y="706" width="26" height="294" fill="#5a3b26" />
+        <rect x="834" y="706" width="26" height="294" fill="#5a3b26" />
+        <g stroke="#ffb28a" stroke-opacity=".35" stroke-width="4" fill="none" class="waves">
+          <path d="M200 620c40-20 80 20 120 0s80 20 120 0 80 20 120 0 80 20 120 0 80 20 120 0" />
+          <path d="M200 120c40-20 80 20 120 0s80 20 120 0 80 20 120 0 80 20 120 0 80 20 120 0" style="animation-delay:-2s" />
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Hallenbad ---------------- */}
+  {
+    name === 'pool' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-water')} />
+        <g>
+          <rect x="100" y="120" width="800" height="400" fill={u('day')} />
+          <g transform="translate(100 120) scale(.8 .4)">
+            <path d={windowTrees} fill="#2b4d3a" />
+          </g>
+          <g stroke="#0a1f21" stroke-width="14">
+            <rect x="100" y="120" width="800" height="400" fill="none" />
+            <line x1="300" y1="120" x2="300" y2="520" />
+            <line x1="500" y1="120" x2="500" y2="520" />
+            <line x1="700" y1="120" x2="700" y2="520" />
+          </g>
+        </g>
+        <rect x="0" y="520" width="1000" height="60" fill="#d8d2c4" />
+        <path d="M60 580H940L1000 1000H0Z" fill={u('water')} />
+        <path d="M100 590H900L920 760H80Z" fill="#dcebe6" opacity=".1" />
+        <g class="caustics" stroke="#c9f3ec" stroke-opacity=".28" stroke-width="4" fill="none">
+          {[640, 700, 770, 850, 940].map((y, i) => (
+            <path d={`M0 ${y}c60 -18 120 18 180 0s120 18 180 0 120 18 180 0 120 18 180 0 120 18 180 0 120 18 180 0`} style={`animation-delay:-${i * 1.3}s`} />
+          ))}
+        </g>
+        <g stroke="#efe9dc" stroke-width="8" fill="none" stroke-linecap="round">
+          <path d="M760 520v-60a30 30 0 0 1 60 0" />
+          <path d="M840 520v-60a30 30 0 0 1 60 0" />
+          <line x1="760" y1="560" x2="840" y2="560" stroke-opacity=".6" />
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Kneipp ---------------- */}
+  {
+    name === 'kneipp' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('bg-water')} />
+        <ellipse cx="500" cy="640" rx="460" ry="250" fill="#0e3437" />
+        <ellipse cx="500" cy="640" rx="430" ry="225" fill={u('water')} />
+        <g class="ripples" fill="none" stroke="#c9f3ec" stroke-width="3">
+          {steam.map((i) => (
+            <ellipse cx="500" cy="640" rx="60" ry="26" style={`animation-delay:-${i * 1.4}s`} />
+          ))}
+        </g>
+        <g fill="#8b8a84" stroke="#3a3a37" stroke-width="3">
+          {[
+            [250, 700, 70, 30],
+            [390, 600, 60, 26],
+            [620, 590, 64, 28],
+            [760, 690, 74, 32],
+            [520, 780, 80, 34],
+          ].map(([cx, cy, rx, ry]) => (
+            <ellipse cx={cx} cy={cy} rx={rx} ry={ry} />
+          ))}
+        </g>
+        <path d="M120 300V460M880 300V460M120 320H880" stroke="#d39a4e" stroke-width="10" stroke-linecap="round" fill="none" />
+        <path d={forestNear} transform="translate(0 -560)" fill="#0b1f1b" opacity=".6" />
+      </g>
+    )
+  }
+
+  {/* ---------------- Dampfbad ---------------- */}
+  {
+    name === 'dampf' && (
+      <g>
+        <rect width="1000" height="1000" fill="#0e2426" />
+        <g>
+          {Array.from({ length: 20 }, (_, r) =>
+            Array.from({ length: 20 }, (_, c) => (
+              <rect x={c * 50 + 2} y={r * 50 + 2} width="46" height="46" rx="4" fill={(r * 7 + c * 3) % 5 === 0 ? '#1f5a5a' : (r + c) % 3 === 0 ? '#174546' : '#123a3b'} />
+            )),
+          )}
+        </g>
+        <path d="M0 700C200 660 800 660 1000 700V1000H0Z" fill="#0a1d1f" />
+        <path d="M0 700C200 660 800 660 1000 700" stroke="#c9f3ec" stroke-opacity=".3" stroke-width="4" fill="none" />
+        <circle cx="500" cy="200" r="200" fill={u('glow-cool')} opacity=".6" />
+        <g class="cloud" fill="#f3fffd">
+          {[
+            [300, 520, 260, 130],
+            [650, 460, 300, 150],
+            [480, 330, 260, 120],
+            [200, 300, 200, 100],
+            [800, 280, 220, 110],
+          ].map(([cx, cy, rx, ry], i) => (
+            <ellipse cx={cx} cy={cy} rx={rx} ry={ry} opacity=".13" filter={u('blur')} style={`animation-delay:-${i * 1.8}s`} />
+          ))}
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Wald ---------------- */}
+  {
+    (name === 'wald' || !['haus', 'stube', 'teller', 'saal', 'zimmer', 'zimmer-tag', 'familie', 'balkon', 'seminar', 'seminar-licht', 'sauna', 'infrarot', 'pool', 'kneipp', 'dampf', 'weg', 'see', 'wuerfel', 'lok', 'turm'].includes(name)) && (
+      <g>
+        <rect width="1000" height="1000" fill={u('day')} />
+        <g class="rays" fill={u('ray')}>
+          {[-30, -12, 6, 22, 40].map((a, i) => (
+            <polygon points="690,-40 720,-40 820,1000 560,1000" transform={`rotate(${a} 700 -40)`} style={`animation-delay:-${i * 1.5}s`} />
+          ))}
+        </g>
+        <path d={forestFar} fill="#7f9a8c" />
+        <path d={forestMid} fill="#4e6f5a" />
+        <path d={forestNear} fill="#1e3226" />
+        <rect y="960" width="1000" height="40" fill="#1e3226" />
+      </g>
+    )
+  }
+
+  {/* ---------------- Waldweg ---------------- */}
+  {
+    name === 'weg' && (
+      <g>
+        <rect width="1000" height="1000" fill="#9fc0b0" />
+        <circle cx="500" cy="640" r="300" fill={u('glow-cool')} />
+        <path d={forestMid} fill="#6c8a79" transform="translate(0 40)" />
+        <path d="M470 760H530L760 1000H240Z" fill="#b9a27d" />
+        <path d="M470 760H530L760 1000H240Z" fill="#fff1c9" opacity=".25" />
+        <path d="M0 760H470L240 1000H0ZM530 760H1000V1000H760Z" fill="#2c4535" />
+        <path d={pathTrees} fill="#15241b" />
+        <g class="rays" fill={u('ray')}>
+          {[-10, 4, 18].map((a, i) => (
+            <polygon points="480,-40 520,-40 580,1000 420,1000" transform={`rotate(${a} 500 -40)`} style={`animation-delay:-${i * 2}s`} />
+          ))}
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- See ---------------- */}
+  {
+    name === 'see' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('day')} />
+        <circle cx="720" cy="220" r="160" fill={u('glow-cool')} />
+        <path d={seeAlps} fill="#8ea6b8" />
+        <path d="M0 620C200 600 400 640 600 610S900 600 1000 620V660H0Z" fill="#3a5a42" />
+        <rect y="650" width="1000" height="350" fill="#3f7792" />
+        <g class="caustics" stroke="#e4f3f4" stroke-opacity=".4" stroke-width="3" fill="none">
+          {[700, 760, 830, 910].map((y, i) => (
+            <path d={`M${40 + i * 60} ${y}h${160 - i * 10}M${520 - i * 40} ${y + 20}h${200}`} style={`animation-delay:-${i}s`} />
+          ))}
+        </g>
+        <g transform="translate(560 600)">
+          <path d="M0 70h140l-20 26H20Z" fill="#efe9dc" />
+          <path d="M70 66V-60L130 60Z" fill="#fbf6ec" />
+          <path d="M64 66V-30L14 60Z" fill="#e1d8c6" />
+        </g>
+        <path d="M0 900C300 870 600 910 1000 880V1000H0Z" fill="#1e3226" />
+      </g>
+    )
+  }
+
+  {/* ---------------- Würfelspiel ---------------- */}
+  {
+    name === 'wuerfel' && (
+      <g>
+        <rect width="1000" height="1000" fill="#0f0a08" />
+        <polygon points="420,0 580,0 900,1000 100,1000" fill="#ffcf7d" opacity=".08" />
+        <circle cx="500" cy="640" r="340" fill={u('glow')} opacity=".6" />
+        <g fill="#5a1414">
+          <path d="M0 0H160C140 300 180 600 120 1000H0Z" />
+          <path d="M1000 0H840C860 300 820 600 880 1000H1000Z" />
+        </g>
+        <ellipse cx="500" cy="800" rx="330" ry="46" fill="#000" opacity=".5" />
+        <g>
+          <path d="M290 560l120-50 120 50-120 50Z" fill="#fbf6ec" />
+          <path d="M290 560v140l120 50V610Z" fill="#d9d0bf" />
+          <path d="M530 560v140l-120 50V610Z" fill="#b9ad97" />
+          <g fill="#1d1d1c">
+            <ellipse cx="410" cy="560" rx="14" ry="7" />
+            <ellipse cx="350" cy="620" rx="9" ry="12" />
+            <ellipse cx="350" cy="680" rx="9" ry="12" />
+            <ellipse cx="470" cy="640" rx="9" ry="12" />
+          </g>
+        </g>
+        <g transform="translate(250 60) rotate(12 400 600)">
+          <path d="M320 600l100-42 100 42-100 42Z" fill="#fbf6ec" />
+          <path d="M320 600v118l100 42V642Z" fill="#d9d0bf" />
+          <path d="M520 600v118l-100 42V642Z" fill="#b9ad97" />
+          <g fill="#1d1d1c">
+            <ellipse cx="385" cy="590" rx="11" ry="6" />
+            <ellipse cx="455" cy="610" rx="11" ry="6" />
+            <ellipse cx="470" cy="690" rx="8" ry="10" />
+          </g>
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Lokpark ---------------- */}
+  {
+    name === 'lok' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('dusk')} />
+        <path d={forestMid} fill="#3a2d45" transform="translate(0 40)" />
+        <rect y="780" width="1000" height="220" fill="#191620" />
+        <g stroke="#8b8a84" stroke-width="6">
+          <line x1="0" y1="800" x2="1000" y2="800" />
+          {Array.from({ length: 21 }, (_, i) => (
+            <line x1={i * 50} y1="796" x2={i * 50 - 10} y2="830" stroke-width="10" stroke="#2a2330" />
+          ))}
+        </g>
+        <g fill="#0f0d14">
+          <rect x="260" y="560" width="360" height="130" rx="60" />
+          <rect x="600" y="470" width="170" height="220" rx="8" />
+          <rect x="580" y="450" width="210" height="30" rx="6" />
+          <rect x="300" y="470" width="56" height="100" />
+          <rect x="288" y="450" width="80" height="26" rx="6" />
+          <path d="M240 690l-60 70h620v-70Z" />
+          <rect x="420" y="530" width="60" height="40" rx="20" />
+        </g>
+        <rect x="640" y="510" width="90" height="70" rx="6" fill="#ffcf7d" opacity=".85" />
+        <g fill="none" stroke="#0f0d14" stroke-width="16">
+          <circle cx="330" cy="740" r="52" />
+          <circle cx="470" cy="740" r="52" />
+          <circle cx="680" cy="750" r="40" />
+        </g>
+        <line x1="330" y1="740" x2="470" y2="740" stroke="#d39a4e" stroke-width="8" />
+        <g class="cloud" fill="#efe9dc">
+          {[
+            [330, 400, 60],
+            [390, 330, 80],
+            [480, 260, 100],
+            [600, 200, 120],
+          ].map(([cx, cy, r], i) => (
+            <circle cx={cx} cy={cy} r={r} opacity={0.16 - i * 0.02} style={`animation-delay:-${i * 1.2}s`} />
+          ))}
+        </g>
+      </g>
+    )
+  }
+
+  {/* ---------------- Aussichtsturm ---------------- */}
+  {
+    name === 'turm' && (
+      <g>
+        <rect width="1000" height="1000" fill={u('dusk')} />
+        <circle cx="720" cy="560" r="220" fill={u('glow')} />
+        <path d={forestFar} fill="#5b4262" transform="translate(0 60)" />
+        <g stroke="#1a1216" stroke-width="12" fill="none" stroke-linecap="round">
+          <path d="M400 860L460 240M600 860L540 240" />
+          <path d="M410 760H590M420 660H580M430 560H570M440 460H560M450 360H550" />
+          <path d="M410 760L580 660M420 660L570 560M430 560L560 460M440 460L550 360M450 360L545 270" />
+        </g>
+        <path d="M430 250H570L550 200H450Z" fill="#1a1216" />
+        <path d="M420 206L500 150 580 206Z" fill="#1a1216" />
+        <path d={forestMid} fill="#2c2233" transform="translate(0 120)" />
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .illu {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .illu :global(.steam path) {
+    animation: rise-steam 5s ease-in-out infinite;
+  }
+  .illu :global(.smoke circle) {
+    animation: smoke-up 7s ease-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .illu :global(.cloud > *) {
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+  .illu :global(.caustics path),
+  .illu :global(.waves path) {
+    animation: sway 6s ease-in-out infinite alternate;
+  }
+  .illu :global(.ripples ellipse) {
+    animation: ripple 4.2s ease-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .illu :global(.rays polygon) {
+    animation: rays 8s ease-in-out infinite alternate;
+  }
+  .illu :global(.flame),
+  .illu :global(.flicker) {
+    animation: flame 1.6s ease-in-out infinite alternate;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+  .illu :global(.sparkle circle) {
+    animation: sparkle 3s ease-in-out infinite alternate;
+  }
+  .illu :global(.sparkle circle:nth-child(2n)) {
+    animation-delay: -1.5s;
+  }
+  @keyframes rise-steam {
+    0% { transform: translateY(20px); opacity: 0; }
+    40% { opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0; }
+  }
+  @keyframes smoke-up {
+    0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+    20% { opacity: 0.22; }
+    100% { transform: translate(60px, -200px) scale(3); opacity: 0; }
+  }
+  @keyframes drift {
+    to { transform: translate(-30px, -40px) scale(1.1); }
+  }
+  @keyframes sway {
+    to { transform: translateX(-60px); }
+  }
+  @keyframes ripple {
+    0% { transform: scale(0.4); opacity: 0.8; }
+    100% { transform: scale(4); opacity: 0; }
+  }
+  @keyframes rays {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+  @keyframes flame {
+    0% { transform: scaleY(1) skewX(0deg); }
+    100% { transform: scaleY(1.08) skewX(-3deg); }
+  }
+  @keyframes sparkle {
+    0% { opacity: 0.1; }
+    100% { opacity: 1; }
+  }
+</style>

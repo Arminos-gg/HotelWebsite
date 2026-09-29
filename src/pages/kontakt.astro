@@ -1,0 +1,189 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Arrow from '../components/Arrow.astro';
+import { site, openingHours } from '../data/site';
+
+const travel = [
+  {
+    t: 'Mit dem Auto',
+    d: 'Über die A1 Westautobahn und weiter Richtung Frankenburg am Hausruck bzw. Redleiten. Für das Navi: Redltal 2, 4873 Redleiten.',
+    i: 'M5 17h14M6 17l1.5-5h9L18 17M7 17v2M17 17v2M8.5 14.5h.01M15.5 14.5h.01',
+  },
+  {
+    t: 'Mit der Bahn',
+    d: 'Die nächsten Bahnhöfe an der Westbahn sind Vöcklamarkt und Vöcklabruck – von dort weiter mit dem Taxi.',
+    i: 'M7 4h10a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM5 11h14M8 21l2-4M16 21l-2-4M9 14h.01M15 14h.01',
+  },
+  {
+    t: 'Mit dem Flugzeug',
+    d: 'Die Flughäfen Salzburg und Linz erreichen Sie jeweils in rund einer Stunde mit dem Auto.',
+    i: 'M3 13l7-2 4-7h2l-2 7 5 1 2-2h1l-1 4 1 4h-1l-2-2-5 1 2 7h-2l-4-7-7-2z',
+  },
+];
+---
+
+<Base title="Kontakt & Anfahrt" description="Kontakt zum Redltalhof: Redltal 2, 4873 Redleiten, Tel. +43 7682 5332, info@redltalhof.at. Anfrage für Zimmer, Seminare und Feiern, Anfahrt mit Auto und Bahn.">
+  <PageHero
+    crumb="Kontakt"
+    eyebrow="Kontakt & Anfahrt"
+    title="Wir freuen uns <em>auf Sie.</em>"
+    lead="Ob Zimmer, Seminar, Fest oder einfach ein Tisch am Kachelofen – schreiben Sie uns oder rufen Sie an."
+    seed={97}
+    house
+  />
+
+  <section class="section" aria-label="Kontaktdaten und Anfrage">
+    <div class="container contact">
+      <aside class="contact__card" data-reveal>
+        <p class="eyebrow">Direkt erreichen</p>
+        <a class="contact__big" href={site.phoneHref}>{site.phone}</a>
+        <a class="contact__big contact__mail" href={`mailto:${site.email}`}>{site.email}</a>
+        <address>
+          <strong>{site.fullName}</strong><br />
+          {site.address.street}<br />
+          A-{site.address.zip} {site.address.city}<br />
+          {site.address.region}, {site.address.country}
+        </address>
+        <div class="contact__hours">
+          <p class="eyebrow">Gasthof geöffnet</p>
+          <dl>
+            {
+              openingHours.gasthof.map((row) => (
+                <>
+                  <dt>{row.days}</dt>
+                  <dd class="num">{row.time}</dd>
+                </>
+              ))
+            }
+            <dt>Küche</dt>
+            <dd class="num">{openingHours.kitchen[0].time}</dd>
+          </dl>
+        </div>
+        <div class="btn-row">
+          <a class="btn" href={site.routeUrl} target="_blank" rel="noopener">Route planen <span class="arrow"><Arrow /></span></a>
+          <a class="btn btn--ghost" href={site.mapsUrl} target="_blank" rel="noopener">Karte öffnen ↗</a>
+        </div>
+      </aside>
+
+      <div class="contact__form">
+        <p class="eyebrow" data-reveal>Anfrage</p>
+        <h2 data-split style="margin-bottom:2.5rem">Schreiben Sie uns <em>ein paar Zeilen.</em></h2>
+        <div data-reveal><InquiryForm /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="anfahrt">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Anfahrt</p>
+        <h2 id="anfahrt" data-split>So finden Sie <em>ins Redltal.</em></h2>
+      </div>
+      <div class="travel">
+        {
+          travel.map((t, i) => (
+            <div class="travel__item" data-reveal style={`--d:${i * 120}`}>
+              <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d={t.i} />
+              </svg>
+              <h3>{t.t}</h3>
+              <p>{t.d}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+  @media (min-width: 1000px) {
+    .contact {
+      grid-template-columns: 0.85fr 1.3fr;
+    }
+    .contact__card {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+  .contact__card {
+    display: grid;
+    gap: 1.2rem;
+    padding: clamp(1.6rem, 3vw, 2.6rem);
+    border-radius: var(--radius-lg);
+    background: var(--forest-900);
+    color: var(--text-inv);
+  }
+  .contact__big {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+    line-height: 1.1;
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.3s;
+    overflow-wrap: anywhere;
+  }
+  .contact__big:hover {
+    color: var(--amber-2);
+  }
+  .contact__mail {
+    font-style: italic;
+    font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  }
+  .contact address {
+    font-style: normal;
+    color: var(--text-inv-soft);
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line-inv);
+  }
+  .contact address strong {
+    color: var(--linen);
+  }
+  .contact__hours {
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line-inv);
+  }
+  .contact__hours .eyebrow {
+    margin-bottom: 0.8rem;
+  }
+  .contact__hours dl {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.4rem 1rem;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .contact__hours dt {
+    color: var(--text-inv-soft);
+  }
+  .contact__hours dd {
+    margin: 0;
+  }
+
+  .travel {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .travel__item {
+    display: grid;
+    gap: 0.9rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line-inv);
+    align-content: start;
+  }
+  .travel__item svg {
+    color: var(--amber-2);
+  }
+  .travel__item p {
+    margin: 0;
+    color: var(--text-inv-soft);
+  }
+</style>

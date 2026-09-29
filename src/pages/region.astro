@@ -1,0 +1,258 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import RegionMap from '../components/RegionMap.astro';
+import Arrow from '../components/Arrow.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+
+const tips = [
+  {
+    cat: 'Wandern',
+    title: 'Redltal-Wanderweg',
+    text: 'Die Runde über Steiglberg, Frauschereck, Schneegattern und Fornach führt mitten durch das Redltal – rund zur Hälfte auf Schotterwegen.',
+    photo: 'region-redltal',
+    illu: 'weg',
+  },
+  {
+    cat: 'Weitwandern',
+    title: 'Hausruck-Kobernaußerwald-Weitwanderweg',
+    text: 'Für Ausdauernde: Etappen des Weitwanderwegs führen durch die großen, teils unberührten Wälder der Region.',
+    photo: 'region-wald',
+    illu: 'wald',
+  },
+  {
+    cat: 'Geschichte & Kultur',
+    title: 'Frankenburger Würfelspiel',
+    text: 'Das traditionsreiche Freilichtspiel erinnert an die Ereignisse des Jahres 1625. Auf dem Würfelspiel-Wanderweg erleben Sie die Geschichte zu Fuß.',
+    photo: 'region-wuerfelspiel',
+    illu: 'wuerfel',
+  },
+  {
+    cat: 'Ausblick',
+    title: 'Aussichtsturm im Hausruck',
+    text: 'Ein gemeinsames Projekt von Ampflwang und Frankenburg: Der Turm bietet einen weiten Blick über Hügel und Wälder.',
+    photo: 'region-turm',
+    illu: 'turm',
+  },
+  {
+    cat: 'Für Familien',
+    title: 'Lokpark Ampflwang',
+    text: 'Historische Bergbau-Gebäude und Fahrten mit alten Lokomotiven erzählen von der Kohle-Zeit im Hausruck.',
+    photo: 'region-lokpark',
+    illu: 'lok',
+  },
+  {
+    cat: 'Seen',
+    title: 'Attersee & Salzkammergut',
+    text: 'In rund einer halben Stunde am Wasser: Baden, Segeln und Schifffahrt – etwa ab Attersee oder Seewalchen.',
+    photo: 'region-attersee',
+    illu: 'see',
+  },
+];
+
+const seasons = [
+  { s: 'Frühling', d: 'Wenn der Wald grün wird und die Bäche voll sind – die schönste Zeit für lange Wanderungen.' },
+  { s: 'Sommer', d: 'Kühle Waldwege, warme Seen. Vormittags wandern, nachmittags an den Attersee.' },
+  { s: 'Herbst', d: 'Nebel im Tal, goldenes Licht, klare Fernsicht bis zu den Alpen.' },
+  { s: 'Winter', d: 'Stille Winterwälder draußen, Kachelofen und Sauna drinnen.' },
+];
+---
+
+<Base title="Region" description="Der Redltalhof liegt in Redleiten im Hausruckviertel zwischen Hausruck und Kobernaußerwald – nahe Attersee, Salzburg und Linz. Wandern, Radfahren, Frankenburger Würfelspiel, Lokpark Ampflwang.">
+  <PageHero
+    crumb="Region"
+    eyebrow="Hausruckviertel · Oberösterreich"
+    title="Hausruck & <em>Kobernaußerwald.</em>"
+    lead="Sanfte Hügel, weite Wälder, frische Bäche – und an klaren Tagen der Blick bis zu den Alpen."
+    seed={83}
+    house
+  />
+
+  <section class="section" aria-labelledby="redleiten">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow" data-reveal>Redleiten</p>
+        <h2 id="redleiten" data-split>Ein kleiner Ort <em>mit großem Wald.</em></h2>
+      </div>
+      <div data-reveal style="--d:200">
+        <p class="lead">
+          Die Hausruck-Gemeinde Redleiten liegt im Bezirk Vöcklabruck am Rand des Kobernaußerwaldes – umgeben von einer sanften
+          Hügellandschaft, teils unberührten Wäldern und erfrischenden Bächen. Wanderer, Radfahrerinnen und Reiter finden hier
+          Natur in ihrer ganzen Fülle.
+        </p>
+        <dl class="facts">
+          <div><dt>Seehöhe</dt><dd class="num">{site.elevation} m</dd></div>
+          <div><dt>Einwohner</dt><dd class="num">ca. 500</dd></div>
+          <div><dt>Bezirk</dt><dd>Vöcklabruck</dd></div>
+          <div><dt>Viertel</dt><dd>Hausruckviertel</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="karte">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Lage & Entfernungen</p>
+        <h2 id="karte" data-split>Mitten im Grünen. <em>Nah an allem.</em></h2>
+      </div>
+      <div data-reveal><RegionMap /></div>
+      <p class="fineprint" style="margin-top:1.5rem">Entfernungen und Fahrzeiten sind gerundete Richtwerte mit dem Auto.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="tipps">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Ausflugstipps</p>
+          <h2 id="tipps" data-split>Raus in den Wald, <em>rauf auf den Turm.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Sechs Ideen für Ihren freien Nachmittag – oder für einen ganzen Tag zwischen Seminar und Heimreise.
+        </p>
+      </div>
+      <div class="tips">
+        {
+          tips.map((t, i) => (
+            <article class="tip" data-reveal style={`--d:${(i % 3) * 120}`}>
+              <div class="tip__media frame">
+                <Photo name={t.photo} illustration={t.illu} alt={t.title} sizes="(min-width: 1000px) 33vw, (min-width: 640px) 50vw, 100vw" />
+              </div>
+              <span class="tip__cat">{t.cat}</span>
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section linen" aria-labelledby="jahreszeiten">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Jahreszeiten</p>
+        <h2 id="jahreszeiten" data-split>Jede Zeit <em>hat ihren Wald.</em></h2>
+      </div>
+      <div class="seasons">
+        {
+          seasons.map((s, i) => (
+            <div class={`season season--${i}`} data-reveal style={`--d:${i * 110}`}>
+              <span class="season__i num">0{i + 1}</span>
+              <h3 class="h2">{s.s}</h3>
+              <p>{s.d}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="btn-row" style="margin-top:3rem" data-reveal>
+        <a class="btn btn--dark" href={url('/kontakt/#anfrage')}>Aufenthalt planen <span class="arrow"><Arrow /></span></a>
+        <a class="btn btn--ghost" href={site.routeUrl} target="_blank" rel="noopener">Route planen ↗</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin: 2.5rem 0 0;
+  }
+  .facts div {
+    border-top: 1px solid var(--line);
+    padding-top: 0.9rem;
+  }
+  .facts dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber);
+  }
+  .facts dd {
+    margin: 0.3rem 0 0;
+    font-family: var(--serif);
+    font-size: 1.7rem;
+  }
+
+  .tips {
+    display: grid;
+    gap: 3rem 2rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .tips {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1000px) {
+    .tips {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .tip {
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+  }
+  .tip__media {
+    aspect-ratio: 4 / 3;
+    margin-bottom: 0.8rem;
+    transition: border-radius 0.8s var(--ease);
+  }
+  .tip:hover .tip__media {
+    border-radius: 120px var(--radius-lg) var(--radius-lg) var(--radius-lg);
+  }
+  .tip__cat {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber);
+  }
+  .tip p {
+    margin: 0;
+    color: var(--text-soft);
+  }
+
+  .seasons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+  }
+  .season {
+    padding: 2rem 1.8rem;
+    border-radius: var(--radius-lg);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--linen);
+  }
+  .season p {
+    margin: 0;
+    opacity: 0.9;
+  }
+  .season__i {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  .season--0 {
+    background: linear-gradient(160deg, #6f8f5a, #3c5a38);
+  }
+  .season--1 {
+    background: linear-gradient(160deg, #3f7792, #22495a);
+  }
+  .season--2 {
+    background: linear-gradient(160deg, #c07b3a, #7b3f22);
+  }
+  .season--3 {
+    background: linear-gradient(160deg, #7f8ea8, #33405a);
+  }
+</style>

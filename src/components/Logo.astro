@@ -1,0 +1,16 @@
+---
+// Bildmarke: eine Fichte in einem Bogen – Wald, Tal und Tor zugleich.
+interface Props {
+  size?: number;
+  class?: string;
+}
+const { size = 44, class: cls = '' } = Astro.props;
+---
+
+<svg class={cls} width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <path d="M8 60V30C8 16.7 18.7 6 32 6s24 10.7 24 24v30" stroke="currentColor" stroke-width="2.2"></path>
+  <path
+    d="M32 14l-6.5 10h3.5l-8 10.5h4.5L16 46h13v8h6v-8h13l-9.5-11.5H43L35 24h3.5L32 14z"
+    fill="currentColor"></path>
+  <path d="M4 60h56" stroke="currentColor" stroke-width="2.2"></path>
+</svg>

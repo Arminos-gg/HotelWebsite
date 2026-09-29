@@ -1,0 +1,27 @@
+{
+  "name": "redltalhof-website",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Neue Website für den Gasthof & Seminarhotel Redltalhof in Redleiten (Oberösterreich).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "astro": "^7.3.5",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.6.3",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

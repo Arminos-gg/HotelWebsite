@@ -1,0 +1,700 @@
+---
+import Base from '../layouts/Base.astro';
+import Landscape from '../components/Landscape.astro';
+import Photo from '../components/Photo.astro';
+import Materials from '../components/Materials.astro';
+import DayStory from '../components/DayStory.astro';
+import RegionMap from '../components/RegionMap.astro';
+import Arrow from '../components/Arrow.astro';
+import { site, facts, openingHours, prices, euro } from '../data/site';
+import { url } from '../lib/url';
+
+const pillars = [
+  {
+    no: '01',
+    kicker: 'Seminarhotel',
+    title: 'Arbeiten mit <em>Weitblick.</em>',
+    text: 'Zwei technisch zeitgemäße Seminarräume, Pausen auf der Terrasse und rundherum nichts als Wald. Hier entstehen Ideen, die man in der Stadt nicht hat.',
+    facts: [`Seminarraum für bis zu ${facts.seminarLarge} Personen`, `Zweiter Raum für ${facts.seminarSmall} Personen`, `Seminarpauschale ab ${euro(prices.seminarPackage)}`],
+    href: '/seminare/',
+    cta: 'Seminar planen',
+    photo: 'seminar-gross',
+    illu: 'seminar',
+  },
+  {
+    no: '02',
+    kicker: 'Zimmer & Suiten',
+    title: 'Schlafen, wo <em>der Wald rauscht.</em>',
+    text: 'Holz, Leinen und viel Ruhe: Zimmer und Suiten für Seminargäste, Familien und alle, die einmal richtig abschalten wollen.',
+    facts: [`${facts.beds} Betten`, 'Familiensuiten & große Suite mit Balkon', `Frühstück ab ${euro(prices.breakfast.double)} p. P.`],
+    href: '/zimmer/',
+    cta: 'Zimmer ansehen',
+    photo: 'zimmer-doppel',
+    illu: 'zimmer',
+  },
+  {
+    no: '03',
+    kicker: 'Gasthof',
+    title: 'Einkehren wie <em>seit Jahrzehnten.</em>',
+    text: 'Eine jahrzehntelange Wirtshaustradition mit regionalen Produkten – in der Gaststube am Kachelofen, im Extrazimmer oder im Saal für Ihr Fest.',
+    facts: ['Regionale & internationale Küche', `Saal für bis zu ${facts.hallCapacity} Gäste`, 'Hochzeiten, Taufen, Firmenfeiern'],
+    href: '/gasthof/',
+    cta: 'Zum Gasthof',
+    photo: 'gaststube',
+    illu: 'stube',
+  },
+  {
+    no: '04',
+    kicker: 'Wellness',
+    title: 'Wärme, Wasser, <em>Ruhe.</em>',
+    text: 'Nach dem Seminar oder der Wanderung: Sauna, Dampfbad, Infrarotkabine, Kneippbereich und Hallenbad – für Hausgäste kostenlos.',
+    facts: ['Hallenbad', 'Sauna & Dampfbad', 'Infrarot & Kneipp'],
+    href: '/wellness/',
+    cta: 'Wellness entdecken',
+    photo: 'hallenbad',
+    illu: 'pool',
+  },
+];
+
+const stats = [
+  { value: site.elevation, unit: 'm', label: 'über dem Meer' },
+  { value: facts.beds, unit: '', label: 'Betten im Haus' },
+  { value: facts.seminarRooms, unit: '', label: 'Seminarräume' },
+  { value: facts.hallCapacity, unit: '', label: 'Gäste im Saal' },
+  { value: 5, unit: '', label: 'Wellness-Elemente' },
+];
+
+const words = ['Wald', 'Kachelofen', 'Regionale Küche', 'Hallenbad', 'Seminar', 'Feste', 'Holz & Leinen', 'Stille', 'Hausruck'];
+---
+
+<Base>
+  <!-- ============================== HERO ============================== -->
+  <section class="hero" aria-labelledby="hero-title">
+    <Landscape seed={11} />
+    <div class="hero__content container">
+      <p class="hero__eyebrow" data-reveal style="--d:900">
+        <span>{site.tagline}</span>
+        <span class="hero__dot" aria-hidden="true"></span>
+        <span>Redleiten im Hausruck</span>
+      </p>
+      <h1 id="hero-title" class="hero__title" aria-label="Redltalhof">
+        {
+          'Redltalhof'.split('').map((ch, i) => (
+            <span class="ch" style={`--i:${i}`} aria-hidden="true">
+              {ch}
+            </span>
+          ))
+        }
+      </h1>
+      <p class="hero__claim" data-reveal style="--d:1500">{site.claim}</p>
+      <div class="btn-row hero__cta" data-reveal style="--d:1700">
+        <a class="btn" href={url('/kontakt/#anfrage')}>
+          Aufenthalt anfragen <span class="arrow"><Arrow /></span>
+        </a>
+        <a class="btn btn--ghost" href={url('/seminare/')}>Seminar planen</a>
+      </div>
+    </div>
+
+    <div class="hero__bar container" data-reveal="fade" style="--d:2000">
+      <div class="timeswitch" role="group" aria-label="Stimmung der Landschaft wählen">
+        <span class="timeswitch__label">Stimmung: <strong data-time-label>Abendrot</strong></span>
+        <div class="timeswitch__btns">
+          <button type="button" data-set-time="dawn" aria-label="Morgengrauen" title="Morgengrauen">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18h16M7 14a5 5 0 0 1 10 0M12 4v3M4.9 8.9l1.6 1.6M19.1 8.9l-1.6 1.6"></path></svg>
+          </button>
+          <button type="button" data-set-time="day" aria-label="Mittag" title="Mittag">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+          </button>
+          <button type="button" data-set-time="dusk" aria-label="Abendrot" title="Abendrot">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18h16M7 18a5 5 0 0 1 10 0M3 14h2M19 14h2M12 8v3"></path></svg>
+          </button>
+          <button type="button" data-set-time="night" aria-label="Sternennacht" title="Sternennacht">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"></path></svg>
+          </button>
+        </div>
+      </div>
+      <a class="hero__scroll" href="#willkommen">
+        <span>Entdecken</span>
+        <i aria-hidden="true"></i>
+      </a>
+      <p class="hero__geo">48°05′ N · 13°28′ O · {site.elevation} m</p>
+    </div>
+  </section>
+
+  <!-- ============================== MANIFEST ============================== -->
+  <section class="section dark manifest" id="willkommen">
+    <div class="container">
+      <p class="eyebrow" data-reveal>Willkommen im Redltal</p>
+      <p class="manifest__text" data-highlight>
+        Mitten im Hausruck, dort wo das Redltal still wird, steht ein Haus mit langer Wirtshaustradition. Wir haben es mit
+        Gespür für das Alte, Sinn für das Moderne und viel Liebe zum Detail erneuert – für Menschen, die gut essen,
+        konzentriert arbeiten und tief durchatmen wollen.
+      </p>
+      <div class="manifest__foot" data-reveal>
+        <a class="link" href={url('/gasthof/')}>Über das Haus <Arrow /></a>
+        <span class="manifest__sig">Ihre Gastgeber im Redltalhof</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== MARQUEE ============================== -->
+  <div class="band" aria-hidden="true">
+    <div class="marquee">
+      {
+        [0, 1].map(() => (
+          <div class="marquee__track">
+            {words.map((w, i) => (
+              <span class:list={['band__word', i % 2 && 'band__word--outline']}>{w}</span>
+              <span class="band__star">✦</span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- ============================== PILLARS ============================== -->
+  <section class="section pillars" aria-labelledby="pillars-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Ein Haus, vier Welten</p>
+          <h2 id="pillars-title" data-split>Alles unter <em>einem Dach.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Tagen, schlafen, genießen, entspannen – im Redltalhof greift alles ineinander. Und wenn der Kopf voll ist, steht
+          der Wald gleich vor der Tür.
+        </p>
+      </div>
+
+      <div class="stack">
+        {
+          pillars.map((p, i) => (
+            <article class="stack__card" style={`--i:${i}`}>
+              <div class="stack__text">
+                <div class="stack__meta">
+                  <span class="stack__no num">{p.no}</span>
+                  <span class="stack__kicker">{p.kicker}</span>
+                </div>
+                <h3 class="h2" set:html={p.title} />
+                <p>{p.text}</p>
+                <ul class="check-list">
+                  {p.facts.map((f) => (
+                    <li>{f}</li>
+                  ))}
+                </ul>
+                <a class="btn btn--dark" href={url(p.href)}>
+                  {p.cta} <span class="arrow"><Arrow /></span>
+                </a>
+              </div>
+              <div class="stack__media frame" data-parallax="0.06">
+                <Photo name={p.photo} illustration={p.illu} alt={p.kicker} sizes="(min-width: 900px) 45vw, 100vw" />
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== STATS ============================== -->
+  <section class="stats dark" aria-label="Der Redltalhof in Zahlen">
+    <div class="container stats__grid">
+      {
+        stats.map((s, i) => (
+          <div class="stat" data-reveal style={`--d:${i * 100}`}>
+            <span class="stat__value num">
+              <span data-count={s.value}>{s.value}</span>
+              {s.unit && <small>{s.unit}</small>}
+            </span>
+            <span class="stat__label">{s.label}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ============================== MATERIALS ============================== -->
+  <section class="section linen" aria-labelledby="mat-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Natürlich gebaut</p>
+          <h2 id="mat-title" data-split>Holz, Leder, Leinen, <em>Granit & Eisen.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Bei der Renovierung haben wir auf ehrliche, natürliche Materialien gesetzt. Sie spiegeln sich im ganzen Haus wider –
+          man sieht sie, man spürt sie, man riecht sie.
+        </p>
+      </div>
+      <Materials />
+    </div>
+  </section>
+
+  <!-- ============================== DAY STORY ============================== -->
+  <DayStory />
+
+  <!-- ============================== REGION ============================== -->
+  <section class="section dark" aria-labelledby="region-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Lage</p>
+          <h2 id="region-title" data-split>Mitten im Grünen. <em>Nah an allem.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Zwischen Kobernaußerwald und Hausruck, eine knappe Stunde von Salzburg und nur wenige Minuten von den Seen des
+          Salzkammerguts entfernt. Wählen Sie ein Ziel, um die Verbindung zu sehen.
+        </p>
+      </div>
+      <div data-reveal>
+        <RegionMap />
+      </div>
+      <p class="fineprint" style="margin-top:1.5rem">Entfernungen und Fahrzeiten sind gerundete Richtwerte mit dem Auto.</p>
+      <div class="btn-row" style="margin-top:2.5rem">
+        <a class="btn" href={url('/region/')}>Die Region entdecken <span class="arrow"><Arrow /></span></a>
+        <a class="btn btn--ghost" href={site.routeUrl} target="_blank" rel="noopener">Route planen ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== BESUCH ============================== -->
+  <section class="section visit" aria-labelledby="visit-title">
+    <div class="container grid-2 grid-2--wide-right">
+      <div class="visit__media frame frame--arch" data-reveal="scale" data-parallax="0.08">
+        <Photo name="haus-aussen" illustration="haus" alt="Der Redltalhof am Abend" />
+      </div>
+      <div>
+        <p class="eyebrow" data-reveal>Gasthof geöffnet</p>
+        <h2 id="visit-title" data-split>Auf ein Essen <em>vorbeikommen?</em></h2>
+        <p class="lead" data-reveal style="margin-block:1.5rem 2rem">
+          Die Gaststube ist für alle da – nicht nur für Hausgäste. Wir freuen uns auf Sie.
+        </p>
+        <table class="table" data-reveal>
+          <tbody>
+            {
+              openingHours.gasthof.map((row) => (
+                <tr>
+                  <th scope="row">{row.days}</th>
+                  <td class="num">{row.time}</td>
+                </tr>
+              ))
+            }
+            <tr>
+              <th scope="row">Küche · {openingHours.kitchen[0].days}</th>
+              <td class="num">{openingHours.kitchen[0].time}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="fineprint" style="margin-top:1rem">{openingHours.note}</p>
+        <div class="btn-row" style="margin-top:2rem" data-reveal>
+          <a class="btn btn--dark" href={site.phoneHref}>Tisch reservieren <span class="arrow"><Arrow /></span></a>
+          <a class="link" href={url('/gasthof/')}>Mehr zum Gasthof <Arrow /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    color: var(--linen);
+    overflow: hidden;
+    background: var(--forest-900);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    padding-top: calc(var(--header-h) + 2vh);
+    padding-bottom: 22vh;
+    text-align: center;
+    display: grid;
+    justify-items: center;
+  }
+  .hero__eyebrow {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  }
+  .hero__dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--amber-2);
+  }
+  .hero__title {
+    font-size: clamp(4.2rem, 16vw, 16rem);
+    font-weight: 300;
+    line-height: 0.82;
+    letter-spacing: -0.055em;
+    font-variation-settings: 'SOFT' 100, 'WONK' 0;
+    text-shadow: 0 10px 60px rgb(0 0 0 / 0.25);
+    white-space: nowrap;
+    margin-inline: -0.05em;
+  }
+  .hero__title .ch {
+    display: inline-block;
+  }
+  :global(.js) .hero__title .ch {
+    opacity: 0;
+    transform: translateY(0.35em) rotate(6deg);
+    filter: blur(12px);
+    animation: ch-in 1.6s var(--ease) forwards;
+    animation-delay: calc(0.35s + var(--i) * 0.07s);
+  }
+  @keyframes ch-in {
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  .hero__claim {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.4rem, 3vw, 2.5rem);
+    font-weight: 300;
+    font-variation-settings: 'SOFT' 100, 'WONK' 1;
+    margin: 1.2rem 0 2.2rem;
+    color: var(--amber-2);
+    text-shadow: 0 2px 20px rgb(0 0 0 / 0.35);
+  }
+  .hero__cta {
+    justify-content: center;
+  }
+  .hero__cta .btn--ghost {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgb(0 0 0 / 0.12);
+  }
+
+  .hero__bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(1rem, 3vh, 2rem);
+    z-index: 3;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 1rem;
+    max-width: none;
+  }
+  .timeswitch {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+  }
+  .timeswitch__label {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+  .timeswitch__label strong {
+    font-weight: 700;
+    color: var(--amber-2);
+  }
+  .timeswitch__btns {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0.3rem;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.25);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .timeswitch button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    background: transparent;
+    color: var(--linen);
+    cursor: pointer;
+    transition:
+      background 0.3s,
+      color 0.3s,
+      transform 0.4s var(--ease);
+  }
+  .timeswitch button:hover {
+    transform: scale(1.08);
+  }
+  .timeswitch button[aria-pressed='true'] {
+    background: var(--amber-2);
+    color: var(--ink);
+  }
+  .hero__scroll {
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .hero__scroll i {
+    position: relative;
+    width: 1px;
+    height: 56px;
+    background: rgb(255 255 255 / 0.25);
+    overflow: hidden;
+  }
+  .hero__scroll i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--amber-2);
+    animation: scrollcue 2.2s var(--ease-in-out) infinite;
+  }
+  @keyframes scrollcue {
+    0% {
+      transform: translateY(-100%);
+    }
+    60%,
+    100% {
+      transform: translateY(100%);
+    }
+  }
+  .hero__geo {
+    justify-self: end;
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  @media (max-width: 700px) {
+    .hero__bar {
+      grid-template-columns: 1fr auto;
+    }
+    .hero__geo {
+      display: none;
+    }
+    .timeswitch__label {
+      display: none;
+    }
+    .hero__content {
+      padding-bottom: 26vh;
+    }
+  }
+
+  /* MANIFEST */
+  .manifest {
+    padding-top: clamp(4rem, 8vw, 7rem);
+  }
+  .manifest__text {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 3.9vw, 3.6rem);
+    line-height: 1.18;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    max-width: 24ch;
+    margin: 0 0 3rem;
+  }
+  .manifest__text :global(.hw) {
+    display: inline;
+  }
+  .manifest__text :global(.hwi) {
+    opacity: 0.18;
+    transition: opacity 0.5s var(--ease), color 0.5s var(--ease);
+  }
+  .manifest__text :global(.hwi.lit) {
+    opacity: 1;
+  }
+  .manifest__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 3rem;
+    align-items: center;
+  }
+  .manifest__sig {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--amber-2);
+    font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  }
+
+  /* BAND */
+  .band {
+    background: var(--amber);
+    color: var(--ink);
+    padding-block: 1.3rem;
+    overflow: hidden;
+  }
+  .band__word {
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 4vw, 3.4rem);
+    font-weight: 400;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+    font-style: italic;
+    font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  }
+  .band__word--outline {
+    color: transparent;
+    -webkit-text-stroke: 1.2px var(--ink);
+    font-style: normal;
+  }
+  .band__star {
+    font-size: 1.2rem;
+  }
+
+  /* PILLARS – gestapelte Karten */
+  .stack {
+    display: grid;
+    gap: 2rem;
+  }
+  .stack__card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: clamp(1.2rem, 3vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 -20px 60px -30px rgb(16 26 20 / 0.35);
+    min-height: min(78vh, 720px);
+  }
+  .stack__card:nth-child(2) {
+    background: var(--linen);
+  }
+  .stack__card:nth-child(3) {
+    background: var(--forest-800);
+    color: var(--text-inv);
+    border-color: var(--line-inv);
+    --text-soft: var(--text-inv-soft);
+  }
+  .stack__card:nth-child(3) .btn--dark {
+    --btn-bg: var(--amber);
+    --btn-fg: var(--ink);
+  }
+  .stack__card:nth-child(3) .btn--dark::before {
+    background: var(--linen);
+  }
+  .stack__card:nth-child(4) {
+    background: #16302f;
+    color: var(--text-inv);
+    border-color: var(--line-inv);
+    --text-soft: var(--text-inv-soft);
+  }
+  .stack__card:nth-child(4) .btn--dark {
+    --btn-bg: var(--linen);
+    --btn-fg: var(--ink);
+  }
+  .stack__card:nth-child(4) .btn--dark::before {
+    background: var(--amber);
+  }
+  @media (min-width: 900px) and (min-height: 700px) {
+    .stack__card {
+      position: sticky;
+      top: calc(var(--header-h) + 1rem + var(--i) * 1.5rem);
+    }
+  }
+  @media (min-width: 900px) {
+    .stack__card {
+      grid-template-columns: 1fr 1.1fr;
+      align-items: stretch;
+      gap: clamp(2rem, 4vw, 4rem);
+    }
+  }
+  .stack__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: clamp(0.5rem, 2vw, 1.5rem);
+  }
+  .stack__text h3 {
+    font-size: clamp(2rem, 3.8vw, 3.6rem);
+  }
+  .stack__text p {
+    color: var(--text-soft);
+    max-width: 46ch;
+    margin: 0;
+  }
+  .stack__text .btn {
+    align-self: flex-start;
+    margin-top: 0.6rem;
+  }
+  .stack__meta {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .stack__no {
+    font-size: 1rem;
+    color: var(--amber);
+  }
+  .stack__kicker {
+    font-size: 0.74rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .stack__media {
+    min-height: 300px;
+    border-radius: calc(var(--radius-lg) - 0.6rem);
+  }
+
+  /* STATS */
+  .stats {
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+    border-block: 1px solid var(--line-inv);
+  }
+  .stats__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 2rem 0;
+  }
+  .stat {
+    display: grid;
+    gap: 0.4rem;
+    padding-inline: 1.5rem;
+    border-left: 1px solid var(--line-inv);
+  }
+  .stat__value {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1;
+    color: var(--amber-2);
+    letter-spacing: -0.03em;
+  }
+  .stat__value small {
+    font-size: 0.4em;
+    margin-left: 0.15em;
+  }
+  .stat__label {
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-inv-soft);
+  }
+
+  /* BESUCH */
+  .visit__media {
+    aspect-ratio: 4 / 5;
+    max-height: 760px;
+  }
+</style>

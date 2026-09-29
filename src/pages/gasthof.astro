@@ -1,0 +1,276 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+import Arrow from '../components/Arrow.astro';
+import { site, facts, openingHours } from '../data/site';
+
+const spaces = [
+  {
+    name: 'Gaststube',
+    text: 'Das Herz des Hauses. Der neu renovierte Kachelofen sorgt besonders an kalten Tagen für eine gemütliche, warme Stimmung.',
+    meta: 'Mit Kachelofen',
+    photo: 'gaststube',
+    illu: 'stube',
+  },
+  {
+    name: 'Extrazimmer',
+    text: 'Durch eine moderne Glasschiebetür von der Gaststube getrennt – ideal für Familien- und Firmenfeiern im kleineren Kreis.',
+    meta: 'Mit Glasschiebetür',
+    photo: 'extrazimmer',
+    illu: 'teller',
+  },
+  {
+    name: 'Saal',
+    text: `Der separate Saal bietet Platz für bis zu ${facts.hallCapacity} Personen – für Hochzeiten, Taufen und private Feiern jeder Art.`,
+    meta: `Bis zu ${facts.hallCapacity} Personen`,
+    photo: 'saal',
+    illu: 'saal',
+  },
+];
+
+const occasions = ['Hochzeiten', 'Taufen', 'Geburtstage', 'Familienfeste', 'Firmenfeiern', 'Jubiläen', 'Stammtische', 'Weihnachtsfeiern'];
+---
+
+<Base title="Gasthof" description="Gasthof Redltalhof: jahrzehntelange Wirtshaustradition, regionale und internationale Küche, Gaststube mit Kachelofen, Extrazimmer und Saal für bis zu 50 Personen. Öffnungszeiten & Reservierung.">
+  <PageHero
+    crumb="Gasthof"
+    eyebrow="Gasthof Redltalhof"
+    title="Einkehren wie <em>seit Jahrzehnten.</em>"
+    lead="Eine jahrzehntelange Wirtshaustradition, regionale Produkte und ein Kachelofen, der an kalten Tagen alle zusammenbringt."
+    seed={59}
+    house
+  />
+
+  <section class="section" aria-labelledby="kueche">
+    <div class="container grid-2 grid-2--wide-right">
+      <div class="kitchen__media frame frame--arch" data-reveal="scale" data-parallax="0.07">
+        <Photo name="kueche" illustration="teller" alt="Regionale Küche im Redltalhof" />
+      </div>
+      <div>
+        <p class="eyebrow" data-reveal>Die Küche</p>
+        <h2 id="kueche" data-split>Regional gedacht. <em>Mit Liebe gekocht.</em></h2>
+        <p class="lead" data-reveal style="margin-block:1.8rem">
+          Unsere Küche verbindet regionale und internationale Spezialitäten – zubereitet aus frischen, hochwertigen Zutaten.
+          Dabei setzen wir auf traditionelle Produkte aus der Umgebung und führen eine Wirtshaustradition fort, die hier seit
+          Jahrzehnten gelebt wird.
+        </p>
+        <ul class="check-list" data-reveal>
+          <li>Regionale Klassiker & saisonale Gerichte</li>
+          <li>Internationale Spezialitäten</li>
+          <li>Frische, hochwertige Zutaten</li>
+          <li>Vollpension & Seminarverpflegung für Hausgäste</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="raeume">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="eyebrow" data-reveal>Räumlichkeiten</p>
+          <h2 id="raeume" data-split>Drei Räume, <em>jede Größe.</em></h2>
+        </div>
+        <p class="lead" data-reveal style="--d:200">
+          Vom Viertel am Stammtisch bis zur Hochzeitstafel: Gaststube, Extrazimmer und Saal lassen sich ganz nach Anlass
+          nutzen.
+        </p>
+      </div>
+      <div class="spaces">
+        {
+          spaces.map((s, i) => (
+            <article class="space" data-reveal style={`--d:${i * 140}`}>
+              <div class="space__media frame">
+                <Photo name={s.photo} illustration={s.illu} alt={s.name} sizes="(min-width: 900px) 33vw, 100vw" />
+              </div>
+              <span class="space__meta">{s.meta}</span>
+              <h3>{s.name}</h3>
+              <p>{s.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="feste" aria-labelledby="feste">
+    <div class="container">
+      <p class="eyebrow" data-reveal>Feiern im Redltalhof</p>
+      <h2 id="feste" class="sr-only">Anlässe</h2>
+      <ul class="feste__list">
+        {
+          occasions.map((o, i) => (
+            <li data-reveal style={`--d:${i * 60}`}>
+              <span class="num">{String(i + 1).padStart(2, '0')}</span>
+              {o}
+            </li>
+          ))
+        }
+      </ul>
+      <p class="lead" data-reveal>
+        Sie planen ein Fest? Sprechen Sie mit uns über Raum, Menü und Ablauf – und auf Wunsch über Zimmer für Ihre Gäste.
+      </p>
+    </div>
+  </section>
+
+  <section class="section linen" aria-labelledby="zeiten">
+    <div class="container grid-2">
+      <div>
+        <p class="eyebrow" data-reveal>Öffnungszeiten</p>
+        <h2 id="zeiten" data-split>Die Tür <em>steht offen.</em></h2>
+        <p class="lead" data-reveal style="margin-top:1.5rem">
+          Tischreservierungen nehmen wir gerne telefonisch unter <a href={site.phoneHref}>{site.phone}</a> entgegen.
+        </p>
+      </div>
+      <div class="hours" data-reveal="scale">
+        <table class="table">
+          <tbody>
+            {
+              openingHours.gasthof.map((row) => (
+                <tr>
+                  <th scope="row">{row.days}</th>
+                  <td class="num">{row.time}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <div class="hours__kitchen">
+          <span>Küche</span>
+          <strong>{openingHours.kitchen[0].days}</strong>
+          <span class="num">{openingHours.kitchen[0].time}</span>
+        </div>
+        <p class="fineprint">{openingHours.note}</p>
+        <a class="btn btn--dark" href={site.phoneHref}>Jetzt anrufen <span class="arrow"><Arrow /></span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="anfrage-title">
+    <div class="container container--narrow">
+      <p class="eyebrow" data-reveal>Feier oder Tisch anfragen</p>
+      <h2 id="anfrage-title" data-split style="margin-bottom:2.5rem">Wir freuen uns <em>auf Ihren Besuch.</em></h2>
+      <div data-reveal><InquiryForm preset="Feier / Veranstaltung" /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .kitchen__media {
+    aspect-ratio: 4 / 5;
+    max-height: 760px;
+  }
+  .spaces {
+    display: grid;
+    gap: 2.5rem 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .space {
+    display: grid;
+    gap: 0.8rem;
+    align-content: start;
+  }
+  .space__media {
+    aspect-ratio: 4 / 5;
+    margin-bottom: 0.8rem;
+    transition: transform 0.8s var(--ease);
+  }
+  .space:hover .space__media {
+    transform: translateY(-6px);
+  }
+  .space__meta {
+    font-size: 0.74rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber-2);
+  }
+  .space p {
+    color: var(--text-inv-soft);
+    margin: 0;
+  }
+
+  .feste {
+    background: var(--amber);
+    color: var(--ink);
+    padding-block: clamp(4rem, 9vw, 8rem);
+  }
+  .feste .eyebrow {
+    color: var(--ink);
+  }
+  .feste__list {
+    list-style: none;
+    margin: 0 0 3rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 2.2rem;
+  }
+  .feste__list li {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 6vw, 5.5rem);
+    line-height: 1.1;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    transition:
+      font-style 0.3s,
+      color 0.3s;
+  }
+  .feste__list li:hover {
+    font-style: italic;
+    color: var(--forest-700);
+  }
+  .feste__list .num {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-top: 0.8em;
+  }
+  .feste .lead {
+    color: var(--ink);
+    opacity: 0.85;
+  }
+
+  .hours {
+    display: grid;
+    gap: 1.4rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    justify-items: start;
+  }
+  .hours .table {
+    width: 100%;
+  }
+  .hours__kitchen {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border-radius: 14px;
+    background: var(--linen-2);
+  }
+  .hours__kitchen span:first-child {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--amber);
+  }
+  .hours__kitchen .num {
+    font-size: 1.3rem;
+  }
+  .hours__kitchen strong {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+</style>

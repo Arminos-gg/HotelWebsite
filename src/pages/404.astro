@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Landscape from '../components/Landscape.astro';
+import Arrow from '../components/Arrow.astro';
+import { url } from '../lib/url';
+---
+
+<Base title="Verlaufen?" description="Diese Seite gibt es nicht – aber der Weg zurück ist nicht weit.">
+  <section class="lost">
+    <Landscape seed={404} />
+    <div class="lost__content container">
+      <p class="eyebrow">Fehler 404</p>
+      <h1>Im Wald <em>verlaufen?</em></h1>
+      <p class="lead">Diese Seite gibt es leider nicht. Aber keine Sorge: Die Fenster vom Hof leuchten schon – der Weg zurück ist nicht weit.</p>
+      <a class="btn" href={url('/')}>Zurück zum Redltalhof <span class="arrow"><Arrow /></span></a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    color: var(--linen);
+    overflow: hidden;
+  }
+  .lost__content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    padding-bottom: 20vh;
+  }
+  .lost .lead {
+    color: rgb(243 238 228 / 0.9);
+    text-shadow: 0 1px 16px rgb(0 0 0 / 0.5);
+  }
+  .lost h1 {
+    text-shadow: 0 6px 40px rgb(0 0 0 / 0.3);
+  }
+</style>

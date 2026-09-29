@@ -1,0 +1,202 @@
+---
+// Mehrschichtige Wald- & Alpenlandschaft mit Tageszeiten, Nebel, Parallax und Glühwürmchen.
+import { W, H, makeRidge, ridgePath, forest, alps, stars, fireflies, rng, spruce } from '../lib/landscape';
+
+interface Props {
+  seed?: number;
+  house?: boolean;
+  compact?: boolean;
+  class?: string;
+}
+
+const { seed = 11, house = true, compact = false, class: cls = '' } = Astro.props;
+
+const alpsD = alps(seed * 3 + 1, 560);
+
+const farRidge = makeRidge(seed + 2, 598, [
+  [18, 0.004],
+  [9, 0.011],
+  [4, 0.031],
+]);
+const midRidge = makeRidge(seed + 3, 652, [
+  [26, 0.0032],
+  [12, 0.009],
+  [5, 0.027],
+]);
+// Talboden: sanfte Mulde in der Mitte, dort steht der Hof
+const valleyBase = makeRidge(seed + 4, 724, [
+  [10, 0.005],
+  [5, 0.017],
+]);
+const houseX = 868;
+const valleyRidge = (x: number) => valleyBase(x) - 26 * Math.exp(-Math.pow((x - houseX) / 260, 2)) + 22 * Math.exp(-Math.pow((x - 300) / 300, 2));
+const nearRidge = makeRidge(seed + 5, 812, [
+  [30, 0.0036],
+  [14, 0.011],
+]);
+
+const houseGround = valleyRidge(houseX);
+
+const farD = ridgePath(farRidge, 20);
+const farTrees = forest(farRidge, seed + 20, { spacing: [7, 13], height: [14, 30], sink: 5 });
+const midD = ridgePath(midRidge, 16);
+const midTrees = forest(midRidge, seed + 30, { spacing: [11, 20], height: [26, 54], sink: 6 });
+const valleyD = ridgePath(valleyRidge, 14);
+const valleyTrees = forest(valleyRidge, seed + 40, {
+  spacing: [16, 30],
+  height: [34, 70],
+  sink: 8,
+  gaps: [[houseX - 150, houseX + 170]],
+});
+const nearD = ridgePath(nearRidge, 12);
+const nearTrees = forest(nearRidge, seed + 50, {
+  spacing: [26, 46],
+  height: [80, 170],
+  sink: 10,
+  gaps: [[660, 1060]],
+  precise: true,
+});
+
+// Große Fichten im Vordergrund rahmen das Bild links und rechts
+const fr = rng(seed + 60);
+const frontGround = (x: number) => 905 - 30 * Math.exp(-Math.pow((x - 90) / 220, 2)) - 30 * Math.exp(-Math.pow((x - 1520) / 220, 2));
+const frontD = ridgePath((x) => (x < 420 || x > 1250 ? frontGround(x) : 930), 20);
+let frontTrees = '';
+for (const [x, h] of [
+  [-30, 640],
+  [70, 520],
+  [185, 430],
+  [290, 300],
+  [1330, 330],
+  [1420, 470],
+  [1540, 600],
+  [1640, 520],
+] as [number, number][]) {
+  frontTrees += spruce(x + (fr() - 0.5) * 20, frontGround(x) + 10, h * (compact ? 0.8 : 1), h * (0.34 + fr() * 0.06), fr, true);
+}
+
+const starList = stars(seed + 70, 170, 520);
+const flies = fireflies(seed + 80, compact ? 14 : 26, 640, 880);
+const id = (n: string) => `${n}-${seed}`;
+---
+
+<div class:list={['scene', compact && 'scene--compact', cls]} data-scene aria-hidden="true">
+  <svg class="layer layer--sky" data-depth="0.7" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id={id('sky')} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="stop-sky-top"></stop>
+        <stop offset="0.62" class="stop-sky-mid"></stop>
+        <stop offset="1" class="stop-sky-bottom"></stop>
+      </linearGradient>
+      <radialGradient id={id('sun-glow')}>
+        <stop offset="0" class="stop-sun" stop-opacity="0.9"></stop>
+        <stop offset="0.25" class="stop-sun" stop-opacity="0.35"></stop>
+        <stop offset="1" class="stop-sun" stop-opacity="0"></stop>
+      </radialGradient>
+      <mask id={id('crescent')}>
+        <circle r="31" fill="#fff"></circle>
+        <circle r="28" cx="-13" cy="-9" fill="#000"></circle>
+      </mask>
+      <linearGradient id={id('ray')} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="stop-sun" stop-opacity="0.32"></stop>
+        <stop offset="1" class="stop-sun" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <rect width={W} height={H} fill={`url(#${id('sky')})`}></rect>
+    <g class="stars">
+      {starList.map((s) => <circle cx={s.x} cy={s.y} r={s.r} style={`animation-delay:-${s.d}s`}></circle>)}
+    </g>
+    <g class="sun">
+      <g class="rays">
+        {[-58, -38, -20, -4, 14, 33, 52].map((a, i) => (
+          <polygon points={`-8,0 8,0 ${60 + i * 8},900 ${-60 - i * 6},900`} transform={`rotate(${a})`} fill={`url(#${id('ray')})`} style={`animation-delay:-${i * 1.7}s`}></polygon>
+        ))}
+      </g>
+      <circle r="260" fill={`url(#${id('sun-glow')})`}></circle>
+      <circle class="sun-disc" r="34"></circle>
+      <circle class="moon-disc" r="30" mask={`url(#${id('crescent')})`}></circle>
+    </g>
+  </svg>
+
+  <svg class="layer layer--alps" data-depth="0.55" data-mx="4" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id={id('alps-grad')} gradientUnits="userSpaceOnUse" x1="0" y1="380" x2="0" y2="590">
+        <stop offset="0" class="stop-snow"></stop>
+        <stop offset="0.22" class="stop-snow"></stop>
+        <stop offset="0.42" class="stop-alps"></stop>
+        <stop offset="1" class="stop-alps-low"></stop>
+      </linearGradient>
+    </defs>
+    <path d={alpsD} fill={`url(#${id('alps-grad')})`}></path>
+  </svg>
+
+  <div class="fog fog--1" data-depth="0.5"></div>
+
+  <svg class="layer layer--far" data-depth="0.45" data-mx="7" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <path d={farD + farTrees}></path>
+  </svg>
+
+  <svg class="layer layer--mid" data-depth="0.35" data-mx="11" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <path d={midD + midTrees}></path>
+  </svg>
+
+  <div class="fog fog--2" data-depth="0.3"></div>
+
+  <svg class="layer layer--valley" data-depth="0.24" data-mx="16" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <path d={valleyD + valleyTrees}></path>
+    {
+      house && (
+        <g class="hof" transform={`translate(${houseX} ${Math.round(houseGround) + 4})`}>
+          <g class="smoke">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <circle cx="51" cy="-90" r={5 + i} style={`animation-delay:-${i * 1.6}s`}></circle>
+            ))}
+          </g>
+          {/* Nebengebäude / Stadl */}
+          <path class="hof-body" d="M-118 0V-30H-44V0Z"></path>
+          <path class="hof-roof" d="M-124 -29L-102 -56H-54L-38 -29Z"></path>
+          {/* Haupthaus */}
+          <path class="hof-body" d="M-50 0V-44H78V0Z"></path>
+          <path class="hof-roof" d="M-58 -43L-28 -82H56L86 -43Z"></path>
+          <path class="hof-body" d="M46 -74h10v-18h-10z"></path>
+          {/* Fenster */}
+          <g class="win">
+            {[-36, -14, 8, 30, 52].map((x) => (
+              <rect x={x} y="-36" width="9" height="11" rx="1"></rect>
+            ))}
+            {[-36, -14, 30, 52].map((x) => (
+              <rect x={x} y="-17" width="9" height="11" rx="1"></rect>
+            ))}
+            <rect x="6" y="-19" width="14" height="19" rx="1"></rect>
+            <rect x="-104" y="-22" width="8" height="9" rx="1"></rect>
+            <rect x="-70" y="-22" width="8" height="9" rx="1"></rect>
+          </g>
+          <ellipse class="win-glow" cx="10" cy="-18" rx="120" ry="40"></ellipse>
+        </g>
+      )
+    }
+  </svg>
+
+  <svg class="layer layer--near" data-depth="0.12" data-mx="24" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <path d={nearD + nearTrees}></path>
+  </svg>
+
+  <svg class="layer layer--flies" data-depth="0.08" data-mx="28" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    {
+      flies.map((f) => (
+        <circle
+          cx={f.x}
+          cy={f.y}
+          r="2.4"
+          style={`--dx:${f.dx}px;--dy:${f.dy}px;animation-delay:-${f.d}s;animation-duration:${f.t}s`}
+        ></circle>
+      ))
+    }
+  </svg>
+
+  <svg class="layer layer--front" data-depth="0" data-mx="40" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice">
+    <path d={frontD + frontTrees}></path>
+  </svg>
+
+  <div class="scene__shade"></div>
+</div>

@@ -1,0 +1,321 @@
+/* ------------------------------------------------------------------ */
+/*  Landschaft & Tageszeiten                                           */
+/*  html[data-time] = dawn | day | dusk | night  (per Skript gesetzt)   */
+/* ------------------------------------------------------------------ */
+:root,
+:root[data-time='dusk'] {
+  --sky-top: #1d1b3a;
+  --sky-mid: #a4586a;
+  --sky-bottom: #f29a62;
+  --sun: #ffc27a;
+  --sun-x: 1180px;
+  --sun-y: 520px;
+  --moon-o: 0;
+  --rays-o: 0.55;
+  --snow: #f7c3a4;
+  --alps: #7c5f82;
+  --alps-low: #4e3f60;
+  --far: #45395a;
+  --mid: #30293f;
+  --valley: #211d2b;
+  --near: #15131c;
+  --front: #0a090e;
+  --fog: 255 196 170;
+  --fog-o: 0.3;
+  --stars-o: 0.25;
+  --flies-o: 0.7;
+  --win: #ffcf7d;
+  --win-o: 0.95;
+  --smoke: rgba(255, 220, 200, 0.16);
+}
+
+:root[data-time='dawn'] {
+  --sky-top: #33456b;
+  --sky-mid: #c3a3b4;
+  --sky-bottom: #f7cf9c;
+  --sun: #ffe0a8;
+  --sun-x: 380px;
+  --sun-y: 540px;
+  --moon-o: 0;
+  --rays-o: 0.8;
+  --snow: #fff0e0;
+  --alps: #8e93b3;
+  --alps-low: #6b7394;
+  --far: #5f6f83;
+  --mid: #435566;
+  --valley: #33443f;
+  --near: #1f2e28;
+  --front: #0e1612;
+  --fog: 255 238 225;
+  --fog-o: 0.55;
+  --stars-o: 0;
+  --flies-o: 0;
+  --win: #ffd892;
+  --win-o: 0.55;
+  --smoke: rgba(255, 245, 235, 0.22);
+}
+
+:root[data-time='day'] {
+  --sky-top: #2f6f9e;
+  --sky-mid: #87b5cf;
+  --sky-bottom: #dcebe6;
+  --sun: #fff6dc;
+  --sun-x: 1130px;
+  --sun-y: 170px;
+  --moon-o: 0;
+  --rays-o: 0.6;
+  --snow: #ffffff;
+  --alps: #9fb3c6;
+  --alps-low: #7f97a8;
+  --far: #6f8f84;
+  --mid: #4e6f5a;
+  --valley: #3a5a42;
+  --near: #22392a;
+  --front: #0f1c14;
+  --fog: 255 255 255;
+  --fog-o: 0.42;
+  --stars-o: 0;
+  --flies-o: 0;
+  --win: #f4e7c8;
+  --win-o: 0.25;
+  --smoke: rgba(255, 255, 255, 0.26);
+}
+
+:root[data-time='night'] {
+  --sky-top: #03060d;
+  --sky-mid: #0b1626;
+  --sky-bottom: #1d3148;
+  --sun: #e9efff;
+  --sun-x: 1160px;
+  --sun-y: 190px;
+  --moon-o: 1;
+  --rays-o: 0;
+  --snow: #b7c4dc;
+  --alps: #2c3a55;
+  --alps-low: #1d2840;
+  --far: #172233;
+  --mid: #111a27;
+  --valley: #0d141d;
+  --near: #080d13;
+  --front: #030609;
+  --fog: 170 190 225;
+  --fog-o: 0.22;
+  --stars-o: 1;
+  --flies-o: 1;
+  --win: #ffc768;
+  --win-o: 1;
+  --smoke: rgba(190, 205, 230, 0.12);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--sky-top);
+  transition: background 1.6s var(--ease-in-out);
+  --sy: 0px;
+  --mx: 0;
+  --my: 0;
+}
+.scene * {
+  transition:
+    fill 1.6s var(--ease-in-out),
+    stop-color 1.6s var(--ease-in-out),
+    opacity 1.6s var(--ease-in-out);
+}
+
+.scene .layer,
+.scene .fog {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transform: translate3d(calc(var(--mx) * var(--k, 0) * 1px), calc(var(--sy) * var(--depth, 0)), 0);
+}
+
+.scene .layer--sky { --depth: 0.7; }
+.scene .layer--alps { --depth: 0.55; --k: 4; }
+.scene .fog--1 { --depth: 0.5; --k: 6; }
+.scene .layer--far { --depth: 0.45; --k: 7; }
+.scene .layer--mid { --depth: 0.35; --k: 11; }
+.scene .fog--2 { --depth: 0.3; --k: 14; }
+.scene .layer--valley { --depth: 0.24; --k: 16; }
+.scene .layer--near { --depth: 0.12; --k: 24; }
+.scene .layer--flies { --depth: 0.08; --k: 28; }
+.scene .layer--front { --depth: 0; --k: 40; }
+
+/* Farben */
+.scene .stop-sky-top { stop-color: var(--sky-top); }
+.scene .stop-sky-mid { stop-color: var(--sky-mid); }
+.scene .stop-sky-bottom { stop-color: var(--sky-bottom); }
+.scene .stop-sun { stop-color: var(--sun); }
+.scene .stop-snow { stop-color: var(--snow); }
+.scene .stop-alps { stop-color: var(--alps); }
+.scene .stop-alps-low { stop-color: var(--alps-low); }
+.scene .layer--far path { fill: var(--far); }
+.scene .layer--mid path { fill: var(--mid); }
+.scene .layer--valley > path { fill: var(--valley); }
+.scene .layer--near path { fill: var(--near); }
+.scene .layer--front path { fill: var(--front); }
+
+/* Sonne & Mond */
+.scene .sun {
+  transform: translate(var(--sun-x), var(--sun-y));
+  transition: transform 2.2s var(--ease-in-out);
+}
+.scene .sun-disc {
+  fill: var(--sun);
+  opacity: calc(1 - var(--moon-o));
+}
+.scene .moon-disc {
+  fill: #f3f1ea;
+  opacity: var(--moon-o);
+}
+.scene .rays {
+  opacity: var(--rays-o);
+  mix-blend-mode: screen;
+}
+.scene .rays polygon {
+  animation: ray 9s ease-in-out infinite alternate;
+  transform-box: view-box;
+}
+@keyframes ray {
+  0% { opacity: 0.25; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+/* Sterne */
+.scene .stars {
+  opacity: var(--stars-o);
+}
+.scene .stars circle {
+  fill: #fff;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  from { opacity: 0.25; }
+  to { opacity: 1; }
+}
+
+/* Nebel */
+.scene .fog {
+  pointer-events: none;
+  opacity: var(--fog-o);
+  background:
+    radial-gradient(40% 10% at 20% 68%, rgb(var(--fog) / 0.9), transparent 70%),
+    radial-gradient(34% 8% at 62% 71%, rgb(var(--fog) / 0.75), transparent 70%),
+    radial-gradient(30% 9% at 95% 66%, rgb(var(--fog) / 0.8), transparent 70%);
+  background-size: 200% 100%;
+  animation: fog 70s linear infinite;
+}
+.scene .fog--2 {
+  background:
+    radial-gradient(45% 9% at 10% 81%, rgb(var(--fog) / 0.8), transparent 70%),
+    radial-gradient(38% 10% at 55% 79%, rgb(var(--fog) / 0.9), transparent 70%),
+    radial-gradient(36% 8% at 88% 83%, rgb(var(--fog) / 0.7), transparent 70%);
+  background-size: 200% 100%;
+  animation-duration: 48s;
+  animation-direction: reverse;
+}
+@keyframes fog {
+  from { background-position: 0 0; }
+  to { background-position: -200% 0; }
+}
+
+/* Hof */
+.scene .hof-body { fill: var(--valley); }
+.scene .hof-roof { fill: var(--near); }
+.scene .win rect {
+  fill: var(--win);
+  opacity: var(--win-o);
+  animation: flicker 7s ease-in-out infinite;
+}
+.scene .win rect:nth-child(3n) { animation-delay: -2s; }
+.scene .win rect:nth-child(4n) { animation-delay: -4.5s; }
+@keyframes flicker {
+  0%, 100% { opacity: var(--win-o); }
+  48% { opacity: calc(var(--win-o) * 0.85); }
+  52% { opacity: var(--win-o); }
+}
+.scene .win-glow {
+  fill: var(--win);
+  opacity: calc(var(--win-o) * 0.14);
+  filter: blur(18px);
+}
+.scene .smoke {
+  filter: blur(3px);
+}
+.scene .smoke circle {
+  fill: var(--smoke);
+  animation: smoke 8s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes smoke {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  15% { opacity: 0.8; }
+  100% { transform: translate(46px, -90px) scale(3.2); opacity: 0; }
+}
+
+/* Glühwürmchen */
+.scene .layer--flies {
+  opacity: var(--flies-o);
+}
+.scene .layer--flies circle {
+  fill: #fff2a8;
+  filter: drop-shadow(0 0 6px #ffe36b) drop-shadow(0 0 14px #ffc93b);
+  animation: firefly 9s ease-in-out infinite alternate;
+  transform-box: fill-box;
+}
+@keyframes firefly {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(var(--dx), var(--dy)); opacity: 0.3; }
+  75% { opacity: 1; }
+  100% { transform: translate(calc(var(--dx) * -0.6), calc(var(--dy) * 0.4)); opacity: 0; }
+}
+
+/* Verlauf zum Inhalt hin */
+.scene__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.28) 0%, transparent 22%),
+    linear-gradient(0deg, var(--forest-900) 0%, transparent 14%);
+}
+
+/* Einblenden beim Laden */
+.js .scene .layer,
+.js .scene .fog {
+  animation: rise 2.2s var(--ease) both;
+}
+.js .scene .layer--alps { animation-delay: 0.05s; }
+.js .scene .layer--far { animation-delay: 0.15s; }
+.js .scene .layer--mid { animation-delay: 0.25s; }
+.js .scene .layer--valley { animation-delay: 0.35s; }
+.js .scene .layer--near { animation-delay: 0.45s; }
+.js .scene .layer--front { animation-delay: 0.55s; }
+.js .scene .fog { animation: rise 2.2s var(--ease) both, fog 70s linear infinite; }
+.js .scene .fog--2 { animation: rise 2.2s var(--ease) both, fog 48s linear infinite reverse; }
+@keyframes rise {
+  from {
+    translate: 0 60px;
+    opacity: 0;
+  }
+}
+.js .scene .layer--sky {
+  animation-name: fadein;
+}
+@keyframes fadein {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene .layer,
+  .scene .fog {
+    transform: none !important;
+  }
+}

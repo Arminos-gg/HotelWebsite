@@ -1,0 +1,58 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { site } from '../data/site';
+---
+
+<Legal title="Impressum" description="Impressum des Gasthof & Seminarhotel Redltalhof in Redleiten.">
+  <p>Informationspflicht laut § 5 E-Commerce-Gesetz, § 14 Unternehmensgesetzbuch, § 63 Gewerbeordnung und Offenlegungspflicht laut § 25 Mediengesetz.</p>
+
+  <h2>Medieninhaber & Betreiber</h2>
+  <dl>
+    <dt>Unternehmen</dt>
+    <dd>{site.fullName}</dd>
+    <dt>Inhaber:in</dt>
+    <dd><span class="todo">[Name bzw. Firmenwortlaut ergänzen]</span></dd>
+    <dt>Anschrift</dt>
+    <dd>{site.address.street}, A-{site.address.zip} {site.address.city}, {site.address.country}</dd>
+    <dt>Telefon</dt>
+    <dd><a href={site.phoneHref}>{site.phone}</a></dd>
+    <dt>E-Mail</dt>
+    <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+    <dt>UID-Nummer</dt>
+    <dd><span class="todo">[ATU … ergänzen]</span></dd>
+    <dt>Firmenbuch</dt>
+    <dd><span class="todo">[falls eingetragen: FN … , Firmenbuchgericht …]</span></dd>
+  </dl>
+
+  <h2>Gewerbe & Aufsicht</h2>
+  <dl>
+    <dt>Unternehmensgegenstand</dt>
+    <dd>Gastgewerbe (Beherbergung und Verabreichung von Speisen und Getränken)</dd>
+    <dt>Kammer</dt>
+    <dd>Wirtschaftskammer Oberösterreich, Sparte Tourismus und Freizeitwirtschaft</dd>
+    <dt>Gewerbebehörde</dt>
+    <dd>Bezirkshauptmannschaft Vöcklabruck</dd>
+    <dt>Berufsrecht</dt>
+    <dd>Gewerbeordnung, abrufbar unter <a href="https://www.ris.bka.gv.at" target="_blank" rel="noopener">ris.bka.gv.at</a></dd>
+  </dl>
+
+  <h2>Grundlegende Richtung</h2>
+  <p>Information über den Gasthof, das Seminarhotel und den Wellnessbereich des Redltalhofs sowie über die Region Hausruck.</p>
+
+  <h2>Online-Streitbeilegung</h2>
+  <p>
+    Verbraucher:innen haben die Möglichkeit, Beschwerden an die Online-Streitbeilegungsplattform der EU zu richten:
+    <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>. Sie können
+    allfällige Beschwerden auch an die oben angegebene E-Mail-Adresse richten.
+  </p>
+
+  <h2>Haftung für Inhalte & Links</h2>
+  <p>
+    Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität
+    – insbesondere von Preisen und Öffnungszeiten – kann keine Gewähr übernommen werden. Für Inhalte externer Links sind
+    ausschließlich deren Betreiber verantwortlich.
+  </p>
+
+  <h2>Bildnachweis</h2>
+  <p>Illustrationen und Landschaftsgrafiken: eigens für diese Website erstellt. Fotos: <span class="todo">[Fotograf:in / Quelle ergänzen]</span></p>
+</Legal>
