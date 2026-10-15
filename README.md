@@ -55,8 +55,9 @@ Fontsource.
 
 ## Veröffentlichen (GitHub Pages)
 
-1. Im Repository unter **Settings → Pages → Source** „GitHub Actions“ wählen.
-2. Auf `main` pushen (oder den Workflow „Deploy to GitHub Pages“ manuell starten).
+1. Im Repository unter **Settings → Pages → Build and deployment → Source** „GitHub Actions“ wählen.
+2. Auf den Standard-Branch pushen (oder unter **Actions → Deploy to GitHub Pages → Run workflow** manuell starten).
+3. Die Seite ist danach unter `https://<benutzer>.github.io/<repository>/` erreichbar.
 
 Für eine eigene Domain (z. B. `www.redltalhof.at`) wird der Basis-Pfad automatisch aus den Pages-Einstellungen
 übernommen.
